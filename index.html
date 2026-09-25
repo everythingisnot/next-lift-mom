@@ -1,0 +1,2475 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!-- Added to the iPhone home screen, this opens full screen like an app. -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Next Lift">
+<meta name="theme-color" content="#FDE5B4">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<title>Next Lift</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&family=Public+Sans:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  /* Pink & peach palette: cream page, warm white cards, pink buttons. */
+  --ground:#FDE5B4;        /* cream */
+  --surface:#FFFDF8;
+  --surface-2:#FFEEDD;     /* pale peach, for boxes inside cards */
+  --line:#F5C9A2;          /* peach, a shade under FFCBA5 so edges show */
+  --line-soft:#FADDC2;
+  --ink:#2B1A14;
+  --ink-2:#6E4F43;
+  --ink-3:#98776A;
+  --accent:#FF9899;        /* pink: buttons and highlights */
+  --accent-soft:#FFCBC4;   /* blush: selected and tinted states */
+  --accent-ink:#3D0F12;    /* text sitting on a pink fill */
+  --accent-text:#B3343E;   /* rose, dark enough to read as text on the cards */
+  --accent-big:#E0707A;    /* softer pink for the big day letter; big text only needs 3:1 */
+  --good:#1B6F4C;   --good-bg:#DFEFE7;
+  --hold:#8A5F10;   --hold-bg:#F6EDDA;
+  --warn:#9C3826;   --warn-bg:#F7E3DE;
+  --shadow:0 1px 2px rgba(21,24,28,.06), 0 6px 18px rgba(21,24,28,.06);
+  --scrim:rgba(253,229,180,.86);
+  --r:16px;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Public Sans","Helvetica Neue",Arial,sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --accent-big:#FFA7A6;
+    --ground:#101317;
+    --surface:#191D23;
+    --surface-2:#212730;
+    --line:#2F3742;
+    --line-soft:#252C35;
+    --ink:#EBEEF2;
+    --ink-2:#98A3B0;
+    --ink-3:#77828F;
+    --accent:#FF9899;
+    --accent-soft:#3A2224;
+    --accent-ink:#2A0A0C;
+    --accent-text:#FFA7A6;
+    --good:#63CE9D;  --good-bg:#143026;
+    --hold:#DDB162;  --hold-bg:#312716;
+    --warn:#EE8B74;  --warn-bg:#38201B;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.28);
+  --scrim:rgba(16,19,23,.82);
+  }
+}
+:root[data-theme="dark"]{
+  --accent-big:#FFA7A6;
+  --ground:#101317;
+  --surface:#191D23;
+  --surface-2:#212730;
+  --line:#2F3742;
+  --line-soft:#252C35;
+  --ink:#EBEEF2;
+  --ink-2:#98A3B0;
+  --ink-3:#77828F;
+  --accent:#FF9899;
+  --accent-soft:#3A2224;
+  --accent-ink:#2A0A0C;
+  --accent-text:#FFA7A6;
+  --good:#63CE9D;  --good-bg:#143026;
+  --hold:#DDB162;  --hold-bg:#312716;
+  --warn:#EE8B74;  --warn-bg:#38201B;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.28);
+  --scrim:rgba(16,19,23,.82);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--f-body);
+  font-size:17px;
+  line-height:1.45;
+  -webkit-text-size-adjust:100%;
+  -webkit-tap-highlight-color:transparent;
+  overscroll-behavior-y:none;
+}
+button{
+  font:inherit;color:inherit;background:none;border:none;cursor:pointer;
+  touch-action:manipulation;-webkit-user-select:none;user-select:none;
+}
+input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.wrap{
+  max-width:520px;margin:0 auto;
+  padding:0 16px calc(150px + env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;gap:16px;
+}
+
+/* ---------- sticky app bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:15;
+  display:flex;align-items:center;gap:10px;
+  margin:0 -16px;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;
+  background:var(--scrim);
+  -webkit-backdrop-filter:saturate(180%) blur(14px);
+  backdrop-filter:saturate(180%) blur(14px);
+  border-bottom:1px solid var(--line-soft);
+}
+.brand{
+  font-family:var(--f-display);font-weight:800;font-size:18px;
+  letter-spacing:-.02em;white-space:nowrap;
+}
+.rot{display:flex;gap:3px;flex:1 1 0;min-width:0;justify-content:flex-end;overflow:hidden}
+
+/* running workout clock, lives in the sticky bar so it never scrolls away */
+.wclock-wrap{
+  flex:1 1 0;min-width:0;display:flex;align-items:baseline;justify-content:flex-end;gap:8px;overflow:hidden;
+}
+.wclock-lbl{
+  font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);white-space:nowrap;
+}
+.wclock{
+  font-family:var(--f-num);font-weight:600;font-size:26px;letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap;
+}
+.rot b{
+  font-family:var(--f-display);font-weight:700;font-size:13px;
+  width:27px;height:28px;flex:none;display:grid;place-items:center;
+  border:1px solid var(--line);border-radius:8px;
+  color:var(--ink-3);background:var(--surface);
+}
+.rot b.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.rot b.past{color:var(--ink-2);background:var(--surface-2)}
+.iconbtn{
+  width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:12px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-size:20px;
+}
+.iconbtn:active{background:var(--surface-2)}
+/* labelled version of the same button, used for History */
+.textbtn{
+  height:46px;flex:none;display:flex;align-items:center;padding:0 14px;border-radius:12px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink-2);
+  font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap;
+}
+.textbtn:active{background:var(--surface-2);color:var(--accent-text)}
+
+/* ---------- generic card ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.eyebrow{
+  font-size:11.5px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);
+}
+
+/* ---------- home ---------- */
+.hero{padding:20px 18px 18px;display:flex;flex-direction:column;gap:3px}
+.hero-top{display:flex;align-items:baseline;gap:14px;margin-top:6px}
+.hero-top>span:last-child{min-width:0}
+.hero-letter{
+  font-family:var(--f-display);font-weight:800;font-size:68px;line-height:.8;
+  letter-spacing:-.05em;color:var(--accent-big, var(--accent-text));
+}
+.hero-name{font-family:var(--f-display);font-weight:700;font-size:30px;letter-spacing:-.02em;text-wrap:balance}
+.hero-variant{display:block;color:var(--ink-2);font-size:16px;margin-top:5px;line-height:1.3}
+.warmup{
+  margin-top:14px;padding:12px 14px;background:var(--surface-2);
+  border-radius:12px;font-size:15px;color:var(--ink-2);
+}
+.warmup span{color:var(--ink-3);font-weight:600;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:3px}
+
+.physiobtn{
+  display:flex;align-items:center;gap:7px;margin-top:8px;min-height:44px;
+  padding:0;border:none;background:none;font-family:var(--f-body);font-size:15px;
+  font-weight:600;color:var(--accent-text);text-decoration:underline;text-underline-offset:3px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.physiobtn i{font-style:normal;font-size:12px;text-decoration:none;display:inline-block;transition:transform .15s}
+.physiobtn.open i{transform:rotate(90deg)}
+.physio{
+  margin-top:2px;padding:12px 14px;border-radius:12px;
+  background:var(--surface-2);border:1px solid var(--line-soft);
+}
+.warmup .physio{background:var(--surface)}
+.physio ol{margin:0;padding:0 0 0 20px;display:flex;flex-direction:column;gap:12px}
+.physio li{font-size:15px;color:var(--ink);line-height:1.35}
+.physio li b{font-weight:600;display:block}
+.physio li em{font-style:normal;display:block;margin-top:2px;color:var(--ink-2);font-size:14px}
+
+.preview{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column}
+.preview li{
+  display:flex;align-items:center;gap:12px;padding:12px 0;
+  border-top:1px solid var(--line-soft);
+}
+.preview li:first-child{border-top:none}
+.preview .pv-n{flex:1;min-width:0}
+.preview .pv-n b{font-weight:600;display:block;font-size:16px}
+.preview .pv-n i{font-style:normal;color:var(--ink-3);font-size:14px}
+.preview .pv-t{font-family:var(--f-num);font-weight:600;font-size:16px;white-space:nowrap;font-variant-numeric:tabular-nums;text-align:right}
+.preview .pv-t em{font-style:normal;color:var(--ink-3);font-weight:500}
+
+/* column heading over the next-time chips on the finish screen */
+.donehead{
+  display:flex;align-items:baseline;gap:12px;margin-top:18px;
+  font-size:11.5px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+}
+.donehead span{flex:1;min-width:0}
+.donehead b{font-weight:700;color:var(--accent-text);white-space:nowrap}
+.donehead + .preview{margin-top:6px}
+.donehead + .preview li:first-child{border-top:1px solid var(--line-soft)}
+
+.big{
+  width:100%;min-height:56px;padding:17px;border-radius:14px;background:var(--accent);color:var(--accent-ink);
+  font-family:var(--f-display);font-weight:700;font-size:19px;letter-spacing:-.01em;
+  margin-top:18px;
+}
+.big:active{filter:brightness(.92)}
+.big.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line);font-size:17px;margin-top:10px}
+.big.ghost.arm{background:var(--warn-bg);color:var(--warn);border-color:var(--warn)}
+
+.switcher{display:flex;gap:8px;margin-top:12px}
+.switcher button{
+  flex:1;min-height:48px;padding:10px 0;border:1px solid var(--line);border-radius:12px;background:var(--surface);
+  font-family:var(--f-display);font-weight:700;font-size:14px;color:var(--ink-2);letter-spacing:-.01em;
+}
+.switcher button.on{border-color:var(--accent);color:var(--accent-text);background:var(--accent-soft)}
+
+.lastline{padding:14px 16px;font-size:15px;color:var(--ink-2)}
+.lastline b{color:var(--ink);font-weight:600}
+
+/* ---------- chips ---------- */
+.chip{
+  display:inline-block;font-family:var(--f-body);font-size:13px;font-weight:600;letter-spacing:.01em;
+  padding:5px 10px;border-radius:8px;white-space:nowrap;
+}
+.chip.good{background:var(--good-bg);color:var(--good)}
+.chip.hold{background:var(--hold-bg);color:var(--hold)}
+.chip.warn{background:var(--warn-bg);color:var(--warn)}
+.chip.new{background:var(--accent-soft);color:var(--accent-text)}
+
+/* ---------- session ---------- */
+.sessbar{display:flex;align-items:center;gap:10px;min-height:48px}
+.sessbar h1{font-family:var(--f-display);font-weight:700;font-size:24px;margin:0;flex:1;letter-spacing:-.02em}
+.sessbar .fin{
+  min-height:44px;padding:10px 18px;border-radius:12px;background:var(--accent);color:var(--accent-ink);
+  font-weight:700;font-size:16px;
+}
+
+.ex{padding:16px 16px 14px;display:flex;flex-direction:column;gap:12px}
+.ex-head{display:flex;align-items:flex-start;gap:10px}
+.ex-head h2{font-family:var(--f-display);font-weight:700;font-size:20px;margin:0;flex:1;letter-spacing:-.01em;text-wrap:balance}
+.ex-sub{font-size:14.5px;color:var(--ink-3);margin-top:-8px}
+.ex-cue{font-size:14.5px;color:var(--ink-2);margin-top:-6px;font-style:italic}
+.addset.holdbtn{border-style:solid;border-color:var(--accent);color:var(--accent-text);background:var(--accent-soft)}
+.vidlink{display:inline-flex;align-items:center;min-height:44px;margin-top:4px;color:var(--accent-text);font-weight:600;font-size:15px;text-decoration:underline;text-underline-offset:3px}
+.coach{
+  font-size:15px;color:var(--ink-2);padding:12px 14px;border-radius:12px;background:var(--surface-2);
+  border-left:4px solid var(--line);
+}
+.coach.good{border-left-color:var(--good)}
+.coach.hold{border-left-color:var(--hold)}
+.coach.warn{border-left-color:var(--warn)}
+.coach.new{border-left-color:var(--accent)}
+.coach .prev{display:block;margin-top:6px;color:var(--ink-3);font-family:var(--f-num);font-size:13.5px}
+
+.altswap{
+  font-size:15px;color:var(--accent-text);font-weight:600;background:none;
+  padding:8px 0;text-align:left;min-height:40px;
+}
+
+/* set rows */
+.sets{display:flex;flex-direction:column;gap:8px}
+.row{display:flex;align-items:stretch;gap:8px}
+.step{
+  display:flex;align-items:stretch;border:1px solid var(--line);border-radius:12px;
+  background:var(--surface);overflow:hidden;flex:1 1 0;min-width:0;
+}
+.step.w{flex:1.4 1 0}
+.step.r{flex:1 1 0}
+.step button{width:44px;flex:none;font-size:22px;font-weight:600;color:var(--ink-2);background:var(--surface-2)}
+.step button:active{background:var(--accent-soft);color:var(--accent-text)}
+.step input{
+  flex:1 1 0;min-width:0;width:100%;border:none;background:none;text-align:center;
+  font-family:var(--f-num);font-weight:600;font-size:20px;padding:12px 2px;
+  -moz-appearance:textfield;
+}
+.step input::-webkit-outer-spin-button,.step input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+/* the running "45 lb bar + 25 a side" sum under the weight box */
+.totline{
+  font-family:var(--f-num);font-size:13px;color:var(--ink-2);
+  padding:2px 2px 0;line-height:1.35;
+}
+.eqrow{display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--line-soft);flex-wrap:wrap}
+.eqrow:first-child{border-top:none}
+.eqrow .eq-n{flex:1 1 140px;min-width:0;font-size:16px;font-weight:600}
+.eqrow .eq-n i{display:block;font-style:normal;font-weight:400;font-size:13.5px;color:var(--ink-3)}
+.eqrow select{
+  flex:none;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;
+  background:var(--surface);color:var(--ink);font-size:15px;font-family:var(--f-body);
+}
+.eqrow .fixed{flex:none;font-size:15px;color:var(--ink-3);font-weight:600}
+.hands{display:flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;flex:none}
+.hands button{min-height:44px;padding:8px 12px;background:var(--surface);color:var(--ink-2);font-size:14px;font-weight:600}
+.hands button.on{background:var(--accent);color:var(--accent-ink)}
+/* Equipment pills inside a live exercise card. */
+.eqlbl{font-size:11px;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:0 2px}
+.eqpick{display:flex;gap:6px;margin:2px 0 4px}
+.eqpick button{min-height:40px;flex:1 1 0;padding:6px 8px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink-2);font-size:14px;font-weight:600}
+.eqpick button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+.capt{display:flex;gap:8px;align-items:center;font-size:11px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:0}
+.capt b{flex:1 1 0;min-width:0;font-weight:600;text-align:center}
+/* full-width log button: the biggest target on the screen, and it names the set */
+.tick{
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  width:100%;min-height:54px;padding:14px;border-radius:12px;border:1px solid var(--accent);
+  background:var(--accent);color:var(--accent-ink);
+  font-family:var(--f-display);font-weight:700;font-size:17px;letter-spacing:-.01em;
+}
+.tick:active{filter:brightness(.9)}
+.tick svg{width:22px;height:22px;flex:none}
+
+.addset{
+  width:100%;min-height:48px;padding:12px;border:1px dashed var(--line);border-radius:12px;
+  background:var(--surface-2);color:var(--ink-2);font-weight:600;font-size:15px;
+}
+.addset:active{background:var(--accent-soft);color:var(--accent-text);border-color:var(--accent)}
+
+.done{
+  display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:12px;
+  background:var(--good-bg);
+}
+.done .lbl{width:auto;color:var(--good);opacity:.8;font-family:var(--f-num);font-size:13px;font-weight:600}
+.done .val{
+  flex:1;font-family:var(--f-num);font-weight:600;font-size:16px;color:var(--good);
+  font-variant-numeric:tabular-nums;
+}
+.done .undo{font-size:15px;font-weight:600;color:var(--good);opacity:.8;padding:6px 8px;min-height:40px}
+.rpe-lbl{font-size:11px;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:2px 2px 0}
+.rpe{display:flex;gap:6px;align-items:stretch;flex-wrap:nowrap}
+.rpe button{
+  flex:1 1 0;min-width:0;height:48px;border:1px solid var(--line);border-radius:12px;
+  font-family:var(--f-num);font-size:17px;font-weight:600;color:var(--ink-2);background:var(--surface);
+}
+.rpe button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.rpe-help{font-size:14px;color:var(--ink-2);padding:0 2px 4px;line-height:1.35;min-height:20px}
+.rpe-help b{color:var(--ink);font-weight:600}
+
+.notebtn{font-size:15px;color:var(--ink-3);font-weight:600;text-align:left;padding:10px 0;min-height:44px}
+.note{
+  width:100%;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);
+  padding:11px 13px;font-size:16px;font-family:var(--f-body);resize:vertical;min-height:70px;
+}
+.bandrow{display:flex;align-items:center;gap:10px}
+.bandrow label{font-size:15px;color:var(--ink-2);font-weight:600;white-space:nowrap}
+.bandrow input{
+  flex:1;min-width:0;min-height:48px;border:1px solid var(--line);border-radius:12px;background:var(--surface);
+  padding:11px 13px;font-size:16px;
+}
+
+/* ---------- rest timer ---------- */
+.rest{
+  position:fixed;left:0;right:0;bottom:0;z-index:20;
+  background:var(--surface);border-top:1px solid var(--line);
+  box-shadow:0 -6px 20px rgba(0,0,0,.14);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.rest-in{max-width:520px;margin:0 auto;padding:12px 14px;display:flex;align-items:center;gap:8px;flex-wrap:nowrap}
+.rest-clock{
+  font-family:var(--f-num);font-weight:600;font-size:28px;letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;width:76px;flex:none;
+}
+.rest-clock.up{color:var(--good)}
+.rest-meta{
+  flex:1 1 0;min-width:0;font-size:12.5px;color:var(--ink-3);line-height:1.25;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.rest-meta b{display:block;color:var(--ink-2);font-size:13.5px;font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rest button{
+  flex:none;min-height:48px;padding:10px 11px;border:1px solid var(--line);border-radius:12px;
+  font-size:15px;font-weight:600;color:var(--ink-2);background:var(--surface-2);white-space:nowrap;
+}
+.rest button:active{background:var(--accent-soft);color:var(--accent-text)}
+.rest button.skip{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.rest button.skip:active{filter:brightness(.9);color:var(--accent-ink)}
+
+/* ---------- history / settings ---------- */
+.h-item{padding:14px 16px;border-top:1px solid var(--line-soft)}
+.h-item:first-child{border-top:none}
+.h-top{display:flex;align-items:baseline;gap:10px}
+.h-top b{font-family:var(--f-display);font-weight:700;font-size:17px}
+.h-top time{margin-left:auto;font-size:14px;color:var(--ink-3);font-family:var(--f-num)}
+.h-body{margin-top:8px;display:flex;flex-direction:column;gap:5px}
+.h-line{font-size:15px;color:var(--ink-2);display:flex;gap:10px}
+.h-line span{flex:1;min-width:0}
+.h-line em{font-style:normal;font-family:var(--f-num);font-size:14px;color:var(--ink);font-variant-numeric:tabular-nums;text-align:right;max-width:62%}
+
+/* worked-out warm-up sets, shown on a main lift until the first working set is logged */
+.warm{border:1px solid var(--accent);background:var(--accent-soft);border-radius:12px;padding:8px 12px 10px}
+.warm-h{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-text);padding:4px 0 2px}
+.warm-row{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:6px 0;text-align:left;border-top:1px solid var(--line)}
+.warm-row:first-of-type{border-top:none}
+.warm-box{width:22px;height:22px;flex:none;border:2px solid var(--accent);border-radius:6px;display:grid;place-items:center;font-size:14px;font-weight:700;color:var(--accent-ink)}
+.warm-row.on .warm-box{background:var(--accent)}
+.warm-l{flex:1;min-width:0;font-size:15px;font-weight:600;color:var(--ink)}
+.warm-r{font-family:var(--f-num);font-size:15px;font-weight:600;color:var(--ink-2);white-space:nowrap}
+.warm-row.on .warm-l,.warm-row.on .warm-r{color:var(--ink-3);text-decoration:line-through}
+.warm-foot{font-size:13px;color:var(--ink-2);padding-top:4px}
+.h-line.skipped span,.h-line.skipped em{color:var(--ink-3)}
+.h-line.skipped em{font-style:italic;font-family:var(--f-body);font-size:13.5px}
+.preview li.skipped .pv-n b{color:var(--ink-3);font-weight:500}
+.preview li.skipped .pv-n i{font-style:italic}
+.h-note{font-size:14px;color:var(--ink-3);padding:0 0 4px 12px;border-left:2px solid var(--line);margin:-2px 0 2px;line-height:1.35}
+
+.set-row{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--line-soft);
+}
+.set-row:first-child{border-top:none}
+.set-row .sr-n{flex:1;min-width:0;font-size:16px;font-weight:600}
+.set-row .sr-n i{display:block;font-style:normal;font-weight:400;font-size:13.5px;color:var(--ink-3)}
+.mini{display:flex;align-items:center;border:1px solid var(--line);border-radius:12px;overflow:hidden;flex:none}
+.mini button{width:44px;height:44px;background:var(--surface-2);color:var(--ink-2);font-size:19px}
+.mini button:active{background:var(--accent-soft);color:var(--accent-text)}
+.mini input{width:62px;border:none;background:none;text-align:center;font-family:var(--f-num);font-weight:600;font-size:16px;padding:10px 0;-moz-appearance:textfield}
+.mini input::-webkit-outer-spin-button,.mini input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+/* ---------- history editor ---------- */
+.card.pad{padding:14px 16px}
+.ed-top{padding:6px 16px 10px}
+.ed-row{display:flex;align-items:center;gap:12px;padding:10px 0}
+.ed-row label{font-size:15px;color:var(--ink-2);font-weight:600;flex:none;min-width:86px}
+.ed-row input{
+  flex:1;min-width:0;min-height:48px;border:1px solid var(--line);border-radius:12px;
+  background:var(--surface);padding:11px 13px;font-size:16px;
+}
+.ed-row .ed-day{font-size:16px;font-weight:600}
+.ed-sets{display:flex;flex-direction:column;gap:8px}
+.ed-set{display:flex;align-items:center;gap:8px}
+.ed-set .ed-n{width:16px;flex:none;font-family:var(--f-num);font-size:13px;color:var(--ink-3);font-weight:600}
+.ed-set .ed-reps{
+  flex:1 1 0;min-width:0;min-height:48px;border:1px solid var(--line);border-radius:12px;
+  background:var(--surface);padding:11px 6px;font-size:17px;text-align:center;
+  font-family:var(--f-num);font-weight:600;
+}
+.ed-set select{
+  flex:none;min-height:48px;padding:8px 8px;border:1px solid var(--line);border-radius:12px;
+  background:var(--surface);color:var(--ink);font-size:15px;font-family:var(--f-body);
+}
+/* column captions over the set rows in the editor, lined up with the inputs below */
+.ed-capt{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:-4px}
+.ed-capt b{flex:1 1 0;min-width:0;font-weight:600;text-align:center}
+.ed-capt .ed-c-rpe{flex:none;width:72px}
+.ed-capt .ed-c-x{flex:none;width:44px}
+.ed-set select{width:72px}
+.ed-set .ed-x{
+  flex:none;width:44px;height:44px;border:1px solid var(--line);border-radius:12px;
+  color:var(--ink-3);font-size:20px;background:var(--surface);
+}
+.h-edit{
+  flex:none;min-height:36px;padding:6px 12px;border:1px solid var(--line);border-radius:10px;
+  color:var(--accent-text);font-size:14px;font-weight:600;background:var(--surface);
+}
+
+.sec-title{font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.02em;padding:0 2px;color:var(--ink-2)}
+.empty{padding:26px 16px;text-align:center;color:var(--ink-3);font-size:15px}
+.banner{
+  padding:12px 14px;border-radius:12px;background:var(--hold-bg);color:var(--hold);
+  font-size:14.5px;font-weight:500;
+}
+.foot{text-align:center;font-size:13px;color:var(--ink-3);padding-top:2px}
+.bk{margin-top:14px;font-size:14px;color:var(--ink-2)}
+.bk.ok{color:var(--good)}
+.bk.fail{color:var(--warn)}
+.card .bk{margin:0;padding:0 16px 12px}
+.set-row a{color:var(--accent-text);font-weight:600;font-size:15px;white-space:nowrap}
+.bkbtn{flex:none;min-height:44px;padding:8px 14px;border:1px solid var(--accent);border-radius:12px;color:var(--accent-text);font-size:15px;font-weight:600;background:var(--surface)}
+
+/* Nothing in this app may fail silently. Anything that throws lands here, on screen. */
+.errbar{
+  position:fixed;left:0;right:0;top:0;z-index:40;
+  background:var(--warn-bg);color:var(--warn);
+  border-bottom:1px solid var(--warn);
+  padding:calc(10px + env(safe-area-inset-top)) 14px 12px;
+}
+.errbar-in{max-width:520px;margin:0 auto;display:flex;align-items:flex-start;gap:10px}
+.errbar b{display:block;font-size:15px;font-weight:700}
+.errbar span{display:block;font-family:var(--f-num);font-size:12.5px;margin-top:4px;word-break:break-word}
+.errbar .errbar-t{flex:1;min-width:0}
+.errbar button{
+  flex:none;min-height:44px;padding:10px 12px;border:1px solid var(--warn);border-radius:10px;
+  color:var(--warn);font-weight:600;font-size:15px;
+}
+
+/* hover styles only where a real pointer exists, so nothing sticks after a tap */
+@media (hover:hover) and (pointer:fine){
+  .iconbtn:hover{color:var(--ink)}
+  .textbtn:hover{color:var(--ink)}
+  .big:hover{filter:brightness(1.08)}
+  .tick:hover{filter:brightness(1.08)}
+  .addset:hover{color:var(--ink)}
+  .rest button:hover{color:var(--ink)}
+}
+</style>
+
+<div class="wrap" id="app"></div>
+<div id="restmount"></div>
+<div id="errmount"></div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   PROGRAM
+   ============================================================ */
+const DAYS = ["A","B","C"];
+
+/* Mom's program, from "mom-strength-program.md" in Nerissa's Drive, with two changes Nerissa gave
+   her in September 2026: lat pulldowns down to 2 sets of 9-10, and Workout C's core is bird dogs
+   only (the full McGill Big 3 stays on Workout A).
+   Flags: main = 2 min rest. bwOk = weight box may be left empty for bodyweight.
+   banded + noBand = no weight and no band box (bodyweight moves). timed = reps are seconds held.
+   per = "per leg" / "per side". cue = short reminder under the name. */
+const PROGRAM = {
+  A: {
+    name: "Lower body + core",
+    warmup: "10-15 sit-to-stands from a chair, then dynamic leg swings",
+    slots: [
+      { id:"goblet_squat", name:"Goblet squat", main:true, sets:3, repLow:8, repHigh:10, rest:120, inc:2.5,
+        cue:"One dumbbell held upright at your chest." },
+      { id:"reverse_lunge", name:"Reverse lunge", bwOk:true, per:"per leg", sets:3, repLow:8, repHigh:10, rest:90, inc:2.5,
+        bwNext:{ chip:"Add weight", msg:"Top of the range on every set. Next time hold a light dumbbell in each hand." } },
+      { id:"glute_bridge", name:"Glute bridge", bwOk:true, sets:3, repLow:12, repHigh:15, rest:90, inc:5,
+        cue:"Squeeze your glutes to lift your hips.",
+        bwNext:{ chip:"Level up", msg:"Top of the range on every set. Next time try it single-leg, or rest a dumbbell on your hips." } },
+      { id:"clamshell", name:"Banded clamshell", banded:true, per:"per side", sets:2, repLow:12, repHigh:15, rest:90,
+        cue:"Band above the knees once bodyweight is too easy. Leave the band empty if you use none." },
+      { id:"dead_bug", name:"Dead bug", banded:true, noBand:true, per:"per side", sets:2, repLow:6, repHigh:8, rest:90,
+        cue:"2-second pause at the bottom." },
+      { id:"side_plank", name:"Side plank", banded:true, noBand:true, timed:true, per:"per side", sets:3, repLow:10, repHigh:10, rest:90,
+        bwNext:{ chip:"Steady", msg:"Every hold done. Stay at 10 seconds unless it starts to feel easy." } },
+      { id:"bird_dog", name:"Bird dog", banded:true, noBand:true, per:"per side", sets:2, repLow:6, repHigh:8, rest:90,
+        cue:"Hold each rep for 5 seconds." }
+    ]
+  },
+  B: {
+    name: "Upper body push",
+    warmup: "Arm circles, then light band pull-aparts",
+    slots: [
+      { id:"shoulder_press", name:"Seated dumbbell shoulder press", main:true, sets:3, repLow:8, repHigh:10, rest:120, inc:2.5,
+        cue:"Bench one notch back from upright. Done first on purpose: best for bone." },
+      { id:"incline_bench", name:"Incline dumbbell bench press", main:true, sets:3, repLow:8, repHigh:10, rest:120, inc:2.5,
+        cue:"Bench at about 30 to 45 degrees." },
+      { id:"incline_pushup", name:"Incline push-up", banded:true, noBand:true, sets:2, repLow:8, repHigh:12, rest:90,
+        cue:"Hands flat on a countertop or wall.",
+        bwNext:{ chip:"Go lower", msg:"Top of the range on every set. Next time use a lower surface, like a sturdy table." } }
+    ]
+  },
+  C: {
+    name: "Pull + back + core",
+    warmup: "Cat-cow, then thoracic rotations",
+    video: "https://www.youtube.com/watch?v=4s15-oQ-q_4",
+    slots: [
+      { id:"rdl", name:"Romanian deadlift", main:true, sets:3, repLow:8, repHigh:10, rest:120, inc:5,
+        cue:"Done first while fresh. Spine neutral the whole way. Type the total weight you hold." },
+      { id:"lat_pulldown", name:"Lat pulldown", sets:2, repLow:9, repHigh:10, rest:90, inc:5 },
+      { id:"cable_row", name:"Seated cable row", sets:3, repLow:10, repHigh:12, rest:90, inc:5 },
+      { id:"pull_aparts", name:"Band pull-aparts", banded:true, sets:2, repLow:12, repHigh:15, rest:90 },
+      { id:"bird_dog", name:"Bird dog", banded:true, noBand:true, per:"per side", sets:2, repLow:6, repHigh:8, rest:90,
+        cue:"Hold each rep for 5 seconds." }
+    ]
+  }
+};
+
+/* Optional ~5 minute finisher, any day. */
+const MOBILITY = [
+  { name:"Ankle: knee-to-wall rocks", cue:"10 per side" },
+  { name:"Hip: half-kneeling hip-flexor stretch", cue:"30 seconds per side" },
+  { name:"Thoracic: open-book rotations", cue:"8 per side" }
+];
+const SHOW_EQUIP_PICKER = false;   // her equipment is fixed per exercise, no BB/SSB pills
+const SHOW_WARMUP_SETS  = false;   // her loads are light; the program's warm-up covers it
+
+/* ============================================================
+   EQUIPMENT
+   Weights are always STORED as the true total lifted. Equipment only changes how that total is
+   typed in: on a bar or an adjustable dumbbell she enters the weight per side, and the app adds
+   the empty implement. Kettlebells and anything odd use "Type the total".
+   ============================================================ */
+const EQUIP = {
+  barbell:  { name:"Barbell",         short:"BB",     perSide:true,  bar:"barbell" },
+  ssb:      { name:"SSB bar",         short:"SSB",    perSide:true,  bar:"ssb" },
+  trap:     { name:"Trap bar",        short:"Trap",   perSide:true,  bar:"trap" },
+  dumbbell: { name:"Dumbbell",        short:"DB",     perSide:false },
+  total:    { name:"Type the total",  short:"Manual", perSide:false }
+};
+const EQUIP_ORDER = ["barbell","ssb","dumbbell","total"];
+
+const BAR_NAME    = { barbell:"Barbell", ssb:"SSB bar", trap:"Trap bar" };
+const BAR_DEFAULT = { barbell:45,        ssb:52,        trap:50 };
+const BAR_ORDER   = ["barbell","ssb","trap"];
+
+/* Sensible starting point per exercise; she can change any of them in Settings. */
+const EQUIP_DEFAULT = {
+  goblet_squat:"total", reverse_lunge:"dumbbell", glute_bridge:"total",
+  shoulder_press:"dumbbell", incline_bench:"dumbbell",
+  rdl:"total", lat_pulldown:"total", cable_row:"total"
+};
+/* Dumbbell work is logged per dumbbell either way; this only changes the wording on screen. */
+const HANDS_DEFAULT = {};
+
+/* Bumped on every publish, and shown at the foot of Settings, so it is possible to tell from
+   the phone which build is actually running. */
+const BUILD = "mom-2026-09-25a";
+
+/* Dates follow the clock on her phone. toISOString() is UTC, which put evening workouts on
+   tomorrow. */
+const TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const LS_CACHE = "momlift.cache.v1";
+const LS_DRAFT = "momlift.draft.v1";
+
+const S = {
+  db: null,
+  dbTried: false,
+  view: "home",
+  rot: { day:"A" },
+  settings: {},          // exId -> {inc, rest, sets, repLow, repHigh, five, equip, hands}
+  bars: {},              // barKey -> weight of the empty bar / handle
+  lifts: {},             // exId -> {weight, reps[], rpes[], band, date, stalls, next{}, history[]}
+  sessions: [],
+  draft: null,           // {day, squat, ham, startedAt, entries:{exId:{weight,band,note,sets:[]}}}
+  rest: null,            // {exId, endsAt, total}
+  openNotes: {},
+  physioOpen: false,
+  armDitch: false,       // first tap on "Throw this one away" arms it, second tap does it
+  prefs: {},             // {alarm, keepAwake} - missing means on
+  returnTo: null,        // so History opened mid-workout comes back to the workout
+  editId: null,          // session open in the history editor
+  editRec: null,         // working copy being edited; only written back on Save
+  armDel: null,          // two-tap delete inside the history editor
+  backup: {},            // Drive backup status this visit: {state: busy|ok|fail, msg}
+  hold: null             // side plank timer: {exId, endsAt}
+};
+
+/* The optional mobility finisher, tap to open. */
+function physioBlock(){
+  let h = '<button class="physiobtn' + (S.physioOpen ? " open" : "") + '" data-act="physio" type="button"' +
+          ' aria-expanded="' + (S.physioOpen ? "true" : "false") + '">' +
+          '<i>&#9654;</i>Optional mobility finisher (about 5 min)</button>';
+  if (S.physioOpen) {
+    h += '<div class="physio"><ol>';
+    for (const x of MOBILITY) h += '<li><b>' + esc(x.name) + '</b><em>' + esc(x.cue) + '</em></li>';
+    h += '</ol></div>';
+  }
+  return h;
+}
+
+/* ---------- errors ----------
+   A silent failure is the worst kind: Finish looked dead for a whole session with nothing on
+   screen to say why. Anything that throws now shows up as a red bar with the message in it. */
+let lastError = null;
+function showError(where, e){
+  const msg = (e && e.message) ? e.message : String(e);
+  let frame = "";
+  if (e && e.stack) {
+    // The app is served from a data: URL, so raw stack frames are hundreds of characters of
+    // encoded HTML. Keep the function name and drop the URL.
+    const line = String(e.stack).split(/\r?\n/)[1] || "";
+    frame = line.replace(/\(?(?:data|https?|file|blob):[^\s)]*\)?/g, "").replace(/\s+/g, " ").trim();
+  }
+  lastError = where + " - " + String(msg).slice(0, 300) + (frame ? "  [" + frame.slice(0, 60) + "]" : "");
+  try { renderErrorBar(); } catch(_){}
+}
+function renderErrorBar(){
+  const m = document.getElementById("errmount");
+  if (!m) return;
+  if (!lastError) { if (m.firstChild) m.innerHTML = ""; return; }
+  m.innerHTML = '<div class="errbar"><div class="errbar-in"><div class="errbar-t">' +
+    '<b>Something went wrong</b><span>' + esc(lastError) + '</span>' +
+    '<span>build ' + esc(BUILD) + '</span></div>' +
+    '<button data-act="errclose" type="button">Close</button></div></div>';
+}
+window.addEventListener("error", function(ev){ showError("Page", ev.error || ev.message); });
+window.addEventListener("unhandledrejection", function(ev){ showError("Background sync", ev.reason); });
+
+/* Documents handed back by the db are frozen snapshots. Assigning one straight into S makes that
+   part of the state permanently read-only, and the next write throws
+   "Cannot add property X, object is not extensible" - which is exactly what killed the Finish
+   button. Everything read out of the db goes through here first. */
+function thaw(v){
+  if (v == null) return v;
+  try { return JSON.parse(JSON.stringify(v)); } catch(e){ return v; }
+}
+
+/* ---------- helpers ---------- */
+const $ = (sel, el) => (el||document).querySelector(sel);
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const clamp = (n,a,b) => Math.min(b, Math.max(a, n));
+/* en-CA formats as YYYY-MM-DD. */
+const todayISO = () => new Intl.DateTimeFormat("en-CA", { timeZone:TZ, year:"numeric", month:"2-digit", day:"2-digit" }).format(new Date());
+const mmss = s => { s=Math.max(0,Math.round(s)); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); };
+/* Same idea as mmss but grows an hours field, for workouts that run past 60 minutes. */
+const hms = s => {
+  s = Math.max(0, Math.round(s));
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), x = s%60;
+  return (h ? h + ":" + String(m).padStart(2,"0") : String(m)) + ":" + String(x).padStart(2,"0");
+};
+
+function fmtDate(iso){
+  const d = new Date(iso + (iso.length<=10 ? "T12:00:00" : ""));
+  if (isNaN(d)) return iso;
+  return d.toLocaleDateString(undefined,{month:"short",day:"numeric"});
+}
+function daysAgo(iso){
+  // Whole calendar days between two Ottawa dates, so "yesterday" flips at Ottawa midnight.
+  const a = Date.parse(String(iso).slice(0,10)), b = Date.parse(todayISO());
+  if (isNaN(a) || isNaN(b)) return "";
+  const n = Math.round((b - a)/86400000);
+  if (n <= 0) return "today";
+  if (n === 1) return "yesterday";
+  return n + " days ago";
+}
+
+/* Resolve a program slot into a concrete exercise for the current rotation. */
+function resolve(slot, rot){
+  const base = slot.alt
+    ? Object.assign({}, slot, slot.options.find(o => o.id === rot[slot.alt]) || slot.options[0])
+    : Object.assign({}, slot);
+  const ov = S.settings[base.id] || {};
+  const ex = Object.assign({}, base, ov);
+  if (base.fiveable && ov.five) { ex.sets = 5; ex.repLow = 5; ex.repHigh = 6; }
+  ex.inc = ex.inc || 5;
+  return ex;
+}
+function exercisesFor(day, rot){
+  return PROGRAM[day].slots.map(s => resolve(s, rot));
+}
+
+/* ---------- equipment ---------- */
+function equipFor(ex){
+  if (ex.banded) return null;
+  if (ex.id === "trap_bar") return "trap";           // deadlifts are always the trap bar
+  const ov = S.settings[ex.id] || {};
+  return EQUIP[ov.equip] ? ov.equip : (EQUIP_DEFAULT[ex.id] || "total");
+}
+function isPerSide(ex){
+  const eq = equipFor(ex);
+  return !!(eq && EQUIP[eq] && EQUIP[eq].perSide);
+}
+function barWeight(key){
+  const v = (S.bars || {})[key];
+  return v != null ? Number(v) : BAR_DEFAULT[key];
+}
+/* Weight of the empty bar or handle for this exercise. */
+function baseWeight(ex){
+  const eq = equipFor(ex);
+  if (!eq || !EQUIP[eq] || !EQUIP[eq].perSide) return 0;
+  return barWeight(EQUIP[eq].bar);
+}
+function handsFor(ex){
+  const ov = S.settings[ex.id] || {};
+  return ov.hands || HANDS_DEFAULT[ex.id] || "each";
+}
+function totalFrom(ex, perSide){
+  const v = Number(perSide);
+  if (isNaN(v)) return null;
+  return Math.round((baseWeight(ex) + 2 * v) * 100) / 100;
+}
+function perSideFrom(ex, total){
+  if (total == null || isNaN(Number(total))) return null;
+  const v = (Number(total) - baseWeight(ex)) / 2;
+  return Math.max(0, Math.round(v * 100) / 100);
+}
+/* Plates go on in pairs, so a 5 lb jump on the bar is 2.5 a side. */
+function sideStep(ex){ return Math.max(1.25, (ex.inc || 5) / 2); }
+function weightStep(ex){ return isPerSide(ex) ? sideStep(ex) : (ex.inc || 5); }
+
+/* What the weight box is asking for. */
+function weightCaption(ex){
+  if (equipFor(ex) === "dumbbell") return "Per dumbbell (lb)";
+  return isPerSide(ex) ? "Per side (lb)" : "Weight (lb)";
+}
+
+/* "95 lb", or "50 lb in each hand" where that would otherwise be ambiguous. */
+function weightLabel(ex, weight, band, equip, hands){
+  if (ex.noBand) return ex.timed ? "hold" : "bodyweight";
+  if (ex.banded) return band ? esc(band) + " band" : "no band";
+  if (weight == null) return "bodyweight";
+  const eq = equip || equipFor(ex);
+  const hd = hands || handsFor(ex);
+  if (eq === "dumbbell") {
+    return weight + " lb " + (hd === "one" ? "in one hand" : "in each hand");
+  }
+  return weight + " lb";
+}
+/* The line under the weight box. Spells the bar sum out, or confirms the dumbbell wording. */
+function totalLine(ex, val){
+  const eq = equipFor(ex);
+  const v = Number(val);
+  const blank = (val === "" || val == null || isNaN(v));
+  if (eq === "dumbbell") {
+    if (blank) return "The whole weight of one dumbbell.";
+    return v + " lb " + (handsFor(ex) === "one" ? "in one hand" : "in each hand");
+  }
+  if (!isPerSide(ex)) return "";
+  if (blank) return "Enter the weight on one side.";
+  return totalFrom(ex, v) + " lb = " + baseWeight(ex) + " bar + " + v + " a side";
+}
+
+/* ---------- per-set weights ----------
+   Every set stores its own weight. Records from before build 2026-09-25a only have one weight on
+   the entry, so a set without its own falls back to that. */
+function setW(s, e){
+  if (s && s.weight != null) return s.weight;
+  return (e && e.weight != null) ? e.weight : null;
+}
+function topWeight(e){
+  let top = null;
+  for (const s of (e.sets || [])) {
+    const w = setW(s, e);
+    if (w != null && (top == null || w > top)) top = w;
+  }
+  return top != null ? top : (e.weight != null ? e.weight : null);
+}
+/* One line for a finished exercise. "135 lb &times; 8, 8, 7" when every set used the same weight,
+   "135&times;8, 135&times;7, 125&times;8 lb" when it changed. bw is the word for no weight. */
+function repText(ex){
+  const r = ex.repLow === ex.repHigh ? ex.repLow : ex.repLow + "-" + ex.repHigh;
+  return (ex.timed ? r + " s hold" : r + " reps") + (ex.per ? " " + ex.per : "");
+}
+function setsSummary(e, bw, bandWord){
+  const sets = e.sets || [];
+  if (!sets.length) return "";
+  const def = exDefById(e.id);
+  if (def && def.timed) return sets.map(s => s.reps).join(", ") + " s";
+  const ws = sets.map(s => setW(s, e));
+  const hand = e.equip === "dumbbell" ? (e.hands === "one" ? " one hand" : " each hand") : "";
+  if (ws.every(w => w === ws[0])) {
+    const lead = ws[0] == null
+      ? (e.band ? esc(e.band) + (bandWord || "") : bw)
+      : ws[0] + " lb" + hand;
+    return lead + " &times; " + sets.map(s => s.reps).join(", ");
+  }
+  return sets.map((s, i) => (ws[i] == null ? bw : ws[i]) + "&times;" + s.reps).join(", ") + " lb" + hand;
+}
+
+/* ============================================================
+   PROGRESSION ENGINE  (double progression + RPE brake + deload)
+   ============================================================ */
+function deloadTo(w, inc){
+  if (!w) return w;
+  return Math.max(inc, Math.floor((w * 0.9) / inc) * inc);
+}
+
+function firstTarget(ex){
+  return {
+    weight: null,
+    reps: ex.repLow,
+    tone: "new",
+    chip: "First time",
+    msg: ex.timed ? "Hold for " + ex.repLow + " seconds each side. Use the timer, then log it."
+      : ex.noBand ? "Log how many you do. Slow and controlled."
+      : ex.banded ? "Log the band you use, if any, and how many you get."
+      : ex.bwOk ? "Type a weight, or leave it empty for bodyweight. From then on it fills itself in."
+      : "Type the weight you plan to use. From then on it fills itself in."
+  };
+}
+
+/* Given a finished entry, work out what to do next time. */
+function progress(ex, entry, prev){
+  const reps = entry.sets.map(s => s.reps).filter(r => r != null);
+  const rpes = entry.sets.map(s => s.rpe).filter(Boolean);
+  // Every set has its own weight. Coaching goes by the heaviest one she used.
+  const w    = topWeight(entry);
+  const inc  = ex.inc;
+  // Bonus sets beyond the plan are saved and shown, but the coaching call is made on the
+  // planned sets only, so an extra tired set can never block a weight increase.
+  const planned = entry.sets.slice(0, ex.sets);
+  const judged = reps.slice(0, ex.sets);
+  const jRpes  = planned.map(s => s.rpe).filter(Boolean);
+  // A set done lighter than the top weight still counts as reaching the range, but it can never
+  // earn a weight increase: the top of the range has to be hit at the top weight.
+  const atTop  = planned.map(s => { const sw = setW(s, entry); return w == null || sw == null || sw >= w; });
+  const hitTop = judged.length >= ex.sets && judged.every((r, i) => r >= ex.repHigh && atTop[i]);
+  const hitLow = judged.length > 0 && judged.every(r => r >= ex.repLow);
+  const avgRpe = jRpes.length ? jRpes.reduce((a,b)=>a+b,0) / jRpes.length : null;
+  let stalls = (prev && prev.stalls) || 0;
+  let next;
+
+  if (!hitLow) {
+    stalls += 1;
+    if (stalls >= 2) {
+      stalls = 0;
+      if (ex.banded) {
+        next = { weight:null, reps:ex.repLow, tone:"warn", chip:"Ease off",
+          msg: ex.assistBand
+            ? "Two rough sessions. Go back up to a thicker band for a couple of weeks, then work down again."
+            : "Two rough sessions. Drop to a lighter band for a couple of weeks, then work back up." };
+      } else if (w) {
+        const d = deloadTo(w, inc);
+        next = { weight:d, reps:ex.repLow, tone:"warn", chip:"Deload",
+          msg:"Two stalled sessions. Drop to " + d + " lb and build back up from " + ex.repLow + " reps." };
+      } else {
+        next = { weight:null, reps:ex.repLow, tone:"warn", chip:"Ease off",
+          msg:"Two stalled sessions. Cut a set or slow it down for a couple of weeks." };
+      }
+    } else {
+      next = { weight:w, reps:ex.repLow, tone:"hold", chip:"Repeat",
+        msg:"You came up short of " + ex.repLow + ". Same weight again, get all " + ex.sets + " sets to " + ex.repLow + "." };
+    }
+  } else if (hitTop && avgRpe != null && avgRpe >= 9) {
+    stalls = 0;
+    next = { weight:w, reps:ex.repHigh, tone:"hold", chip:"Hold",
+      msg:"You hit the top of the range but rated it " + (Math.round(avgRpe*10)/10) + ". Stay here one more session, then add weight." };
+  } else if (hitTop) {
+    stalls = 0;
+    if (ex.banded) {
+      next = ex.assistBand
+        ? { weight:null, reps:ex.repHigh, tone:"good", chip:"Lighter band",
+            msg:"Clean sweep. Next time switch to a lighter band than last time." }
+        : { weight:null, reps:ex.repLow, tone:"good", chip:"Stronger band",
+            msg:"Clean sweep. Next time use a stronger band and start again at " + ex.repLow + " reps." };
+    } else if (w) {
+      next = { weight:w + inc, reps:ex.repLow, tone:"good", chip:"Add " + inc + " lb",
+        msg:"All " + ex.sets + " sets at " + ex.repHigh + ". Go to " + (w+inc) + " lb and start again at " + ex.repLow + " reps." };
+    } else {
+      next = { weight:null, reps:ex.repHigh, tone:"good", chip:"Add load",
+        msg:"Top of the range on every set. Hold a light plate next time, or slow the lowering right down." };
+    }
+  } else if (judged.length >= ex.sets && judged.every(r => r >= ex.repHigh)) {
+    // Every rep target was hit, but some sets were done lighter than the top weight.
+    stalls = 0;
+    next = { weight:w, reps:ex.repHigh, tone:"hold", chip:"Stay at " + w + " lb",
+      msg:"Every set reached " + ex.repHigh + ", but not all at " + w + " lb. Do all " + ex.sets +
+          " sets at " + w + " before the weight goes up." };
+  } else {
+    stalls = 0;
+    const aim = Math.min(ex.repHigh, Math.min.apply(null, judged) + 1);
+    next = { weight:w, reps:aim, tone:"hold", chip:"Add a rep",
+      msg:"Same weight. Aim for " + aim + " on every set before the weight goes up." };
+  }
+
+  if (ex.noBand || (ex.bwOk && !w)) next = bodyCoach(ex, next, judged, hitTop);
+
+  const hist = ((prev && prev.history) || []).slice(0, 11);
+  const weights = entry.sets.filter(s => s.reps != null).map(s => setW(s, entry));
+  hist.unshift({ date: entry.date, weight: w, weights: weights.slice(), reps: reps.slice(), band: entry.band || null });
+
+  return {
+    weight: w,
+    weights: weights,
+    reps: reps.slice(),
+    rpes: rpes.slice(),
+    band: entry.band || (prev && prev.band) || null,
+    date: entry.date,
+    stalls: stalls,
+    next: next,
+    history: hist
+  };
+}
+
+/* Rewords a coaching call for a move with no weight: bodyweight reps or a timed hold. */
+function bodyCoach(ex, next, judged, hitTop){
+  const unit = ex.timed ? " seconds" : "";
+  const n = Object.assign({}, next, { weight:null });
+  if (n.chip === "Repeat")
+    n.msg = "You came up short of " + ex.repLow + unit + ". Aim for all " + ex.sets + " sets at " + ex.repLow + unit + " next time.";
+  else if (n.chip === "Ease off")
+    n.msg = "Two tough sessions in a row. Do fewer, slower, good-form reps for a couple of weeks.";
+  else if (n.chip === "Add a rep")
+    n.msg = "Aim for " + n.reps + unit + " on every set next time.";
+  else if (n.chip === "Hold")
+    n.msg = "You hit the top of the range but it felt very hard. Stay here one more session.";
+  else if (hitTop)
+    Object.assign(n, ex.bwNext || { chip:"Add a challenge",
+      msg:"Top of the range on every set. Next time slow each rep right down." });
+  return n;
+}
+
+function targetFor(ex){
+  const lift = S.lifts[ex.id];
+  if (!lift || !lift.next) return firstTarget(ex);
+  const t = Object.assign({}, lift.next);
+  if (t.reps == null) t.reps = ex.repLow;
+  return t;
+}
+
+/* ============================================================
+   PERSISTENCE
+   ============================================================ */
+function cacheLocal(){
+  try {
+    localStorage.setItem(LS_CACHE, JSON.stringify({ rot:S.rot, settings:S.settings, bars:S.bars, prefs:S.prefs, lifts:S.lifts, sessions:S.sessions }));
+  } catch(e){}
+}
+function saveDraft(){
+  try {
+    if (S.draft) localStorage.setItem(LS_DRAFT, JSON.stringify(S.draft));
+    else localStorage.removeItem(LS_DRAFT);
+  } catch(e){}
+}
+function loadLocal(){
+  try {
+    const c = JSON.parse(localStorage.getItem(LS_CACHE) || "null");
+    if (c) {
+      if (c.rot) S.rot = c.rot;
+      if (c.settings) S.settings = c.settings;
+      if (c.bars) S.bars = c.bars;
+      if (c.prefs) S.prefs = c.prefs;
+      if (c.lifts) S.lifts = c.lifts;
+      if (c.sessions) S.sessions = c.sessions;
+    }
+    const d = JSON.parse(localStorage.getItem(LS_DRAFT) || "null");
+    if (d && d.entries) S.draft = d;
+  } catch(e){}
+}
+
+async function pushState(){
+  cacheLocal();
+  if (!S.db) return;
+  try {
+    await S.db.doc("log/state").set({
+      rot: S.rot, settings: S.settings, bars: S.bars, prefs: S.prefs, lifts: S.lifts, updatedAt: new Date().toISOString()
+    });
+  } catch(e){ /* stays in localStorage; next write retries */ }
+}
+
+async function connect(){
+  S.dbTried = true;
+  try {
+    if (!window.claude || typeof window.claude.use !== "function") return;
+    const db = await window.claude.use("db");
+    if (!db) return;
+    S.db = db;
+    const snap = await db.doc("log/state").get();
+    if (snap && snap.exists) {
+      const d = thaw(snap.data()) || {};
+      if (d.rot) S.rot = Object.assign({}, S.rot, d.rot);
+      if (d.settings) S.settings = d.settings;
+      if (d.bars) S.bars = d.bars;
+      if (d.prefs) S.prefs = d.prefs;
+      if (d.lifts) S.lifts = d.lifts;
+    }
+    try {
+      const q = await db.collection("sessions").orderBy("date","desc").limit(40).get();
+      S.sessions = (thaw((q.docs || []).map(x => x.data())) || [])
+        .filter(function(x){ return x && !x.deleted; });
+    } catch(e){}
+    cacheLocal();
+  } catch(e){ /* offline / not granted -> local only */ }
+  finally { render(); }
+}
+
+/* ============================================================
+   SESSION ACTIONS
+   ============================================================ */
+function startSession(day){
+  S.draft = {
+    day: day,
+    squat: S.rot.squat,
+    ham: S.rot.ham,
+    startedAt: new Date().toISOString(),
+    date: todayISO(),
+    entries: {},
+    note: ""
+  };
+  saveDraft();
+  S.view = "session";
+  render();
+}
+
+function draftRot(){
+  return S.draft ? { squat:S.draft.squat, ham:S.draft.ham } : S.rot;
+}
+function entryFor(ex){
+  const d = S.draft;
+  if (!d.entries[ex.id]) {
+    const t = targetFor(ex);
+    d.entries[ex.id] = {
+      weight: t.weight,
+      band: (S.lifts[ex.id] && S.lifts[ex.id].band) || "",
+      note: "",
+      extra: 0,          // bonus sets she asked for beyond the plan
+      sets: []
+    };
+  }
+  return d.entries[ex.id];
+}
+
+function logSet(exId){
+  const ex = exercisesFor(S.draft.day, draftRot()).find(e => e.id === exId);
+  const e = entryFor(ex);
+  const wEl = document.getElementById("w_" + exId);
+  const rEl = document.getElementById("r_" + exId);
+  const raw = wEl ? (wEl.value === "" ? null : Number(wEl.value)) : null;
+  // On a bar or a dumbbell she types one side; what gets stored is always the true total.
+  const w = (raw == null || isNaN(raw)) ? null : (isPerSide(ex) ? totalFrom(ex, raw) : raw);
+  const r = rEl ? Number(rEl.value) : ex.repLow;
+  if (!r || r < 1) return;
+  if (!ex.banded && !ex.bwOk && wEl && (w == null || isNaN(w))) {
+    wEl.focus();
+    return;
+  }
+  // The set keeps its own weight. e.weight is just the last one used, so the box for the
+  // next set starts there.
+  e.weight = ex.banded ? null : w;
+  e.blank = false;
+  e.sets.push({ reps: r, rpe: null, weight: e.weight });
+  saveDraft();
+  startRest(ex);
+  render();
+}
+function undoSet(exId, i){
+  const e = S.draft.entries[exId];
+  if (!e) return;
+  e.sets.splice(i, 1);
+  saveDraft();
+  render();
+}
+function setRpe(exId, i, v){
+  const e = S.draft.entries[exId];
+  if (!e || !e.sets[i]) return;
+  e.sets[i].rpe = (e.sets[i].rpe === v) ? null : v;
+  saveDraft();
+  render();
+}
+
+async function finishSession(){
+  try { await doFinish(); }
+  catch(e){ showError("Finish", e); }
+}
+
+async function doFinish(){
+  const d = S.draft;
+  const rot = draftRot();
+  const list = exercisesFor(d.day, rot);
+  const entries = [];
+  // Everything on the plan is recorded. An exercise with no sets is kept and marked skipped,
+  // so History shows what was missed instead of quietly pretending it was never on the list.
+  for (const ex of list) {
+    const e = d.entries[ex.id];
+    const done = !!(e && e.sets.length);
+    entries.push({
+      id: ex.id, name: ex.name,
+      weight: done ? topWeight(e) : null,
+      band: (e && e.band) || null,
+      equip: ex.banded ? null : equipFor(ex), hands: handsFor(ex),
+      note: (e && e.note) || "", date: d.date,
+      skipped: !done,
+      sets: done ? e.sets.map(s => ({ reps:s.reps, rpe:s.rpe, weight:setW(s, e) })) : []
+    });
+  }
+  if (!entries.some(function(x){ return !x.skipped; })) {
+    // Nothing was logged, so there is nothing to lose. Closing it needs no confirmation,
+    // and an Artifact's sandboxed frame can block confirm() anyway.
+    S.draft = null; saveDraft(); S.view = "home"; render(); return;
+  }
+
+  // Rebuild rather than mutate, so a frozen S.lifts can never block a finished workout again.
+  const lifts = Object.assign({}, S.lifts);
+  for (const ex of list) {
+    const en = entries.find(x => x.id === ex.id);
+    if (!en || en.skipped) continue;
+    lifts[ex.id] = progress(ex, en, S.lifts[ex.id]);
+  }
+  S.lifts = lifts;
+
+  const durationSec = Math.round(elapsedSec());
+  const rec = {
+    id: d.startedAt.replace(/[:.]/g,"-"),
+    date: d.date, day: d.day, dayName: PROGRAM[d.day].name,
+    squat: d.squat, ham: d.ham, note: d.note || "",
+    startedAt: d.startedAt,
+    finishedAt: new Date().toISOString(),
+    durationSec: durationSec,
+    entries: entries
+  };
+  S.sessions.unshift(rec);
+
+  // advance the rotation, flip the alternate that was used
+  S.rot.day = DAYS[(DAYS.indexOf(d.day) + 1) % DAYS.length];
+  if (d.day === "A") S.rot.squat = (d.squat === "back_squat") ? "lunges" : "back_squat";
+  if (d.day === "B") S.rot.ham   = (d.ham === "ghd") ? "rdl" : "ghd";
+
+  S.draft = null; S.rest = null;
+  saveDraft();
+  cacheLocal();
+
+  // Show the finish screen FIRST. The server sync happens afterwards and must never hold the
+  // UI up: while this awaited the db write, a call that hung left Finish looking completely
+  // dead - the workout was saved locally but the screen never moved.
+  S.view = "done";
+  render();
+
+  try { Promise.resolve(pushState()).catch(function(){}); } catch(e){}
+  if (S.db) {
+    try { Promise.resolve(S.db.doc("sessions/" + rec.id).set(rec)).catch(function(){}); } catch(e){}
+  }
+  backupToDrive();
+}
+
+/* ---------- alarm ----------
+   The beeps are SCHEDULED on the audio clock the moment rest starts, not fired by a timer when it
+   runs out. A phone throttles page timers as soon as you look away, but sound already handed to
+   the audio hardware usually still plays. It is the best a web page can do; it is not a guarantee
+   with the screen locked. */
+let actx = null;
+let alarmNodes = [];
+
+function prefs(){ return S.prefs || (S.prefs = {}); }
+function prefOn(k){ return prefs()[k] !== false; }     // default on
+
+function audioReady(){
+  try {
+    const C = window.AudioContext || window.webkitAudioContext;
+    if (!C) return null;
+    if (!actx) actx = new C();
+    if (actx.state === "suspended") actx.resume();
+    return actx;
+  } catch(e){ return null; }
+}
+function cancelAlarm(){
+  for (const n of alarmNodes) { try { n.stop(); } catch(e){} try { n.disconnect(); } catch(e){} }
+  alarmNodes = [];
+}
+function scheduleAlarm(secondsFromNow){
+  cancelAlarm();
+  if (!prefOn("alarm")) return;
+  const ctx = audioReady();
+  if (!ctx) return;
+  const t0 = ctx.currentTime + Math.max(0, secondsFromNow);
+  // eight triple-beeps two seconds apart: about 15 seconds of alarm unless she taps Done
+  for (let burst = 0; burst < 8; burst++) {
+    for (let i = 0; i < 3; i++) {
+      const at = t0 + burst * 2 + i * 0.22;
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.type = "square";
+      osc.frequency.setValueAtTime(880, at);
+      gain.gain.setValueAtTime(0.0001, at);
+      gain.gain.exponentialRampToValueAtTime(0.4, at + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.18);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(at); osc.stop(at + 0.2);
+      alarmNodes.push(osc);
+    }
+  }
+}
+
+/* ---------- keep the screen awake ----------
+   The browser takes this back the moment the page is hidden, so it only holds while the app is
+   actually on screen. Re-taken whenever she comes back to it. */
+let wakeLock = null;
+async function wakeOn(){
+  try {
+    if (wakeLock || !navigator.wakeLock) return;
+    wakeLock = await navigator.wakeLock.request("screen");
+    wakeLock.addEventListener("release", function(){ wakeLock = null; });
+  } catch(e){ wakeLock = null; }
+}
+function wakeOff(){
+  try { if (wakeLock) wakeLock.release(); } catch(e){}
+  wakeLock = null;
+}
+function syncWake(){
+  if (S.view === "session" && S.draft && prefOn("keepAwake")) wakeOn();
+  else wakeOff();
+}
+document.addEventListener("visibilitychange", function(){
+  if (document.visibilityState === "visible") syncWake();
+});
+
+/* ---------- Google Drive backup ----------
+   Her phone is the only place her workouts live, so after every finished, edited or deleted
+   workout the whole history is posted to a small Google Apps Script running in Nerissa's account
+   (backup-script/Code.gs). It rewrites one Google Sheet, "Mom workout history", plus a raw JSON
+   copy, in the "Mom workout backups" folder of Nerissa's Drive. If a backup cannot get through
+   (no signal at the gym), it is marked pending and tried again the next time the app opens.
+   Never blocks the UI and never shows the red error bar. */
+const BACKUP_URL = "https://script.google.com/macros/s/AKfycbzf8Ku-z65zQKcWKB0ZvxdPVpVQGm3zr81SQ6BChWAA0DO_IyWoMvH6-Nj19iJ_HfxO/exec";
+const BACKUP_KEY = "O0__D8Hx0LF3ia_zV29w2cAX";
+let backupBusy = false, backupAgain = false;
+
+function csvCell(v){
+  v = v == null ? "" : String(v);
+  return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+}
+/* One row per set, oldest workout first. Enough to rebuild the app from if it ever came to that. */
+function historyCsv(list){
+  const rows = [["Date","Workout","Exercise","Set","Weight (lb)","Reps","How hard","Band","Equipment",
+                 "Hands","Skipped","Note","Workout minutes","Exercise id","Workout id"]];
+  const ordered = list.slice().sort(function(a,b){
+    return String(a.date||"").localeCompare(String(b.date||"")) || String(a.id||"").localeCompare(String(b.id||""));
+  });
+  for (const rec of ordered) {
+    const mins = rec.durationSec != null ? Math.round(rec.durationSec / 60) : "";
+    const day = rec.day + " " + (rec.dayName || "");
+    for (const e of (rec.entries || [])) {
+      const eq = e.equip && EQUIP[e.equip] ? EQUIP[e.equip].name : "";
+      const hands = e.equip === "dumbbell" ? (e.hands === "one" ? "one" : "each") : "";
+      const sets = e.sets || [];
+      if (e.skipped || !sets.length) {
+        rows.push([rec.date, day, e.name, "", "", "", "", "", eq, hands, "yes", e.note || "", mins, e.id, rec.id]);
+        continue;
+      }
+      sets.forEach(function(s, i){
+        rows.push([rec.date, day, e.name, i + 1, setW(s, e), s.reps, s.rpe || "", e.band || "", eq, hands, "",
+                   i === 0 ? (e.note || "") : "", mins, e.id, rec.id]);
+      });
+    }
+  }
+  return rows.map(function(r){ return r.map(csvCell).join(","); }).join("\r\n");
+}
+function backupReady(){ return /^https:\/\//.test(BACKUP_URL); }
+async function backupToDrive(){
+  if (!backupReady()) return;
+  if (backupBusy) { backupAgain = true; return; }
+  backupBusy = true;
+  S.prefs = Object.assign({}, S.prefs, { backupPending: true });
+  cacheLocal();
+  S.backup = { state:"busy" }; backupRefresh();
+  try {
+    const r = await fetch(BACKUP_URL, {
+      method: "POST",
+      // text/plain keeps this a "simple" request, so the browser sends it without a pre-check
+      // that Apps Script cannot answer.
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ key: BACKUP_KEY, build: BUILD, csv: historyCsv(S.sessions),
+                             json: JSON.stringify({ rot:S.rot, settings:S.settings, sessions:S.sessions }) })
+    });
+    const j = await r.json();
+    if (!j || !j.ok) throw new Error((j && j.error) || "The backup was refused.");
+    S.prefs = Object.assign({}, S.prefs, { backupPending: false, driveAt: new Date().toISOString() });
+    cacheLocal();
+    S.backup = { state:"ok" };
+  } catch(e) {
+    S.backup = { state:"fail", msg: navigator.onLine === false
+      ? "No signal right now. It will back up next time the app opens."
+      : "Could not reach Google Drive. It will try again next time the app opens." };
+  } finally {
+    backupBusy = false;
+    backupRefresh();
+    if (backupAgain) { backupAgain = false; backupToDrive(); }
+  }
+}
+function backupRefresh(){
+  if (S.view === "done" || S.view === "settings") render();
+}
+function fmtStamp(iso){
+  const d = new Date(iso);
+  if (isNaN(d)) return "";
+  return d.toLocaleString("en-CA", { timeZone:TZ, month:"short", day:"numeric", hour:"numeric", minute:"2-digit" });
+}
+function backupLine(){
+  const b = S.backup || {};
+  if (b.state === "busy") return '<div class="bk">Backing up to Google Drive&hellip;</div>';
+  if (b.state === "ok")   return '<div class="bk ok">Backed up to Google Drive.</div>';
+  if (b.state === "fail") return '<div class="bk fail">' + esc(b.msg) + '</div>';
+  return "";
+}
+
+/* ---------- rest timer ---------- */
+let restTick = null;
+function startRest(ex){
+  const secs = ex.rest || 90;
+  S.rest = { exId: ex.id, name: ex.name, startedAt: Date.now(), endsAt: Date.now() + secs*1000, total: secs };
+  scheduleAlarm(secs);
+  if (restTick) clearInterval(restTick);
+  restTick = setInterval(renderRest, 250);
+  renderRest();
+}
+function bumpRest(delta){
+  if (!S.rest) return;
+  S.rest.endsAt += delta*1000;
+  scheduleAlarm((S.rest.endsAt - Date.now()) / 1000);
+  renderRest();
+}
+function stopRest(){
+  S.rest = null;
+  cancelAlarm();
+  if (restTick) { clearInterval(restTick); restTick = null; }
+  renderRest();
+}
+/* ---------- hold timer (side plank) ----------
+   Counts down on the button itself and beeps once when the hold is done. She still logs the set. */
+let holdTick = null;
+function startHold(exId){
+  const el = document.getElementById("r_" + exId);
+  const secs = Math.max(1, Number(el && el.value) || 10);
+  S.hold = { exId: exId, endsAt: Date.now() + secs * 1000 };
+  const ctx = audioReady();
+  if (ctx && prefOn("alarm")) {
+    const at = ctx.currentTime + secs;
+    for (let i = 0; i < 3; i++) {
+      const t = at + i * 0.22, osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.type = "square"; osc.frequency.setValueAtTime(880, t);
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.4, t + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(t); osc.stop(t + 0.2);
+    }
+  }
+  if (holdTick) clearInterval(holdTick);
+  holdTick = setInterval(renderHold, 200);
+  renderHold();
+}
+function renderHold(){
+  if (!S.hold) { if (holdTick) { clearInterval(holdTick); holdTick = null; } return; }
+  const b = document.getElementById("hold_" + S.hold.exId);
+  const left = Math.ceil((S.hold.endsAt - Date.now()) / 1000);
+  if (left <= 0) {
+    if (b) b.textContent = "Time! Now log it below. Tap to go again";
+    S.hold = null;
+    return;
+  }
+  if (b) b.textContent = "Holding\u2026 " + left;
+}
+
+let buzzed = false;
+let restKey = null;   // identifies the timer bar currently sitting in the DOM
+
+/* The bar is built ONCE per rest period. The 250ms tick only rewrites the clock text.
+   Rebuilding it every tick used to destroy the buttons between mousedown and mouseup,
+   so taps on Done / +30 / -30 never turned into a click. */
+function renderRest(){
+  const m = document.getElementById("restmount");
+  if (!m) return;
+  if (!S.rest) {
+    if (restKey !== null || m.firstChild) { m.innerHTML = ""; restKey = null; }
+    buzzed = false;
+    return;
+  }
+
+  const key = S.rest.exId + "|" + S.rest.startedAt;
+  if (restKey !== key || !m.firstChild) {
+    m.innerHTML =
+      '<div class="rest"><div class="rest-in">' +
+        '<div class="rest-clock" id="restclock">0:00</div>' +
+        '<div class="rest-meta"><b id="restlabel">Resting</b><span id="restname"></span></div>' +
+        '<button data-act="rest-" type="button">&minus;30</button>' +
+        '<button data-act="rest+" type="button">+30</button>' +
+        '<button data-act="rest0" class="skip" type="button">Done</button>' +
+      '</div></div>';
+    document.getElementById("restname").textContent = S.rest.name;
+    restKey = key;
+  }
+
+  const left = (S.rest.endsAt - Date.now()) / 1000;
+  const over = left <= 0;
+  if (over && !buzzed) {
+    buzzed = true;
+    if (navigator.vibrate) { try { navigator.vibrate([180,90,180]); } catch(e){} }
+  }
+  if (!over) buzzed = false;
+
+  const clock = document.getElementById("restclock");
+  const label = document.getElementById("restlabel");
+  if (!clock || !label) return;
+  const t = over ? "+" + mmss(-left) : mmss(left);
+  if (clock.textContent !== t) clock.textContent = t;
+  clock.classList.toggle("up", over);
+  const lt = over ? "Rest is up" : "Resting";
+  if (label.textContent !== lt) label.textContent = lt;
+}
+
+/* ---------- workout clock ----------
+   Counts from S.draft.startedAt, so it survives a reload or a trip out of the app.
+   The tick only rewrites the clock's text node; it never rebuilds the bar. */
+let workTick = null;
+
+function elapsedSec(){
+  if (!S.draft || !S.draft.startedAt) return 0;
+  const t = new Date(S.draft.startedAt).getTime();
+  if (isNaN(t)) return 0;
+  return Math.max(0, (Date.now() - t) / 1000);
+}
+function renderClock(){
+  const el = document.getElementById("wclock");
+  if (!el) return;
+  const t = hms(elapsedSec());
+  if (el.textContent !== t) el.textContent = t;
+}
+function syncClock(){
+  const live = (S.view === "session" && !!S.draft);
+  if (live && !workTick) workTick = setInterval(renderClock, 1000);
+  if (!live && workTick) { clearInterval(workTick); workTick = null; }
+  renderClock();
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function rotStrip(){
+  const cur = S.draft ? S.draft.day : S.rot.day;
+  const i = DAYS.indexOf(cur);
+  return '<div class="rot">' + DAYS.map((d,j) =>
+    '<b class="' + (j===i ? "on" : (j<i ? "past" : "")) + '">' + d + '</b>').join("") + '</div>';
+}
+
+function topbar(){
+  const back = (S.view !== "home");
+  return '<div class="topbar">' +
+    (back
+      ? '<button class="iconbtn" data-act="home" type="button" aria-label="Back">&#8592;</button>'
+      : '<span class="brand">Next&nbsp;Lift</span>') +
+    (S.view === "session" && S.draft
+      ? '<div class="wclock-wrap"><span class="wclock-lbl">Workout</span>' +
+        '<b class="wclock" id="wclock">' + hms(elapsedSec()) + '</b></div>'
+      : rotStrip()) +
+    (S.view === "home"
+      ? '<button class="textbtn" data-act="history" type="button">History</button>' +
+        '<button class="iconbtn" data-act="settings" type="button" aria-label="Settings">&#9881;</button>'
+      : "") +
+    (S.view === "session" && S.draft
+      ? '<button class="iconbtn" data-act="history" type="button" aria-label="History">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" ' +
+        'stroke-linejoin="round" aria-hidden="true" style="width:22px;height:22px">' +
+        '<path d="M3 6h18M3 12h18M3 18h12"/></svg></button>'
+      : "") +
+    '</div>';
+}
+
+function targetText(ex, t){
+  if (ex.timed) return '<em>' + ex.sets + ' &times; ' + t.reps + ' s</em>';
+  if (ex.banded) return '<em>' + ex.sets + ' &times; ' + t.reps + '</em>';
+  if (t.weight == null) return ex.bwOk ? '<em>bodyweight &middot; ' + ex.sets + '&times;' + t.reps + '</em>' : '<em>set a weight</em>';
+  return t.weight + '<em> lb &middot; ' + ex.sets + '&times;' + t.reps + '</em>';
+}
+
+function viewHome(){
+  const day = S.rot.day, P = PROGRAM[day];
+  const list = exercisesFor(day, S.rot);
+  const last = S.sessions[0];
+  const resume = S.draft;
+
+  let h = '<div class="card hero">';
+  h += '<div class="eyebrow">' + (resume ? "In progress" : "Next up") + '</div>';
+  h += '<div class="hero-top"><span class="hero-letter">' + day + '</span>' +
+       '<span><span class="hero-name">' + esc(P.name) + '</span>' +
+       '<span class="hero-variant">' + esc(list.filter(e=>e.main).map(e=>e.name).join(" · ")) + '</span></span></div>';
+  h += '<div class="warmup"><span>Warm up</span>' + esc(P.warmup) + videoLink(P) + '</div>';
+  h += '<ul class="preview">';
+  for (const ex of list) {
+    const t = targetFor(ex);
+    h += '<li><div class="pv-n"><b>' + esc(ex.name) + '</b><i>' + ex.sets + ' sets &middot; ' +
+         repText(ex) + ' &middot; rest ' + mmss(ex.rest) +
+         '</i></div><div class="pv-t">' + targetText(ex, t) + '</div></li>';
+  }
+  h += '</ul>';
+  h += '<button class="big" data-act="' + (resume ? "resume" : "start") + '" type="button">' +
+       (resume ? "Carry on with " + resume.day : "Start " + day + " &middot; " + esc(P.name)) + '</button>';
+  if (resume) h += '<button class="big ghost' + (S.armDitch ? " arm" : "") + '" data-act="ditch" type="button">' +
+       (S.armDitch ? "Tap again to throw it away" : "Throw this one away") + '</button>';
+  h += '<div class="switcher">' + DAYS.map(d =>
+        '<button data-act="pick" data-day="' + d + '" class="' + (d===day?"on":"") + '" type="button">' +
+        d + ' &middot; ' + PROGRAM[d].name + '</button>').join("") + '</div>';
+  h += '</div>';
+
+  if (last) {
+    h += '<div class="card lastline">Last time: <b>' + last.day + ' &middot; ' + esc(last.dayName) +
+         '</b>, ' + daysAgo(last.date) + '.</div>';
+  }
+
+  return h;
+}
+
+/* Plain-English meaning of each "how hard" number.
+   Shown as a tooltip on hover, and as a line under the row after a tap (phones have no hover). */
+const RPE_HELP = {
+  6:  "Easy. You could have done 4 or more extra reps.",
+  7:  "Comfortable. About 3 more reps were in the tank.",
+  8:  "Hard, but 2 more reps were there.",
+  9:  "Very hard. Maybe 1 more rep, and that is it.",
+  10: "All out. There was no way you could lift a single rep more."
+};
+
+function setsBlock(ex, e, t){
+  let h = '<div class="sets">';
+  e.sets.forEach((s, i) => {
+    h += '<div class="done"><span class="lbl">' + (i+1) + '</span><span class="val">' +
+         (ex.timed ? s.reps + ' s hold' : weightLabel(ex, setW(s, e), e.band) + ' &times; ' + s.reps) + (s.rpe ? '  &middot;  RPE ' + s.rpe : '') +
+         '</span><button class="undo" data-act="undo" data-ex="' + ex.id + '" data-i="' + i + '" type="button">Undo</button></div>';
+    h += '<div class="rpe-lbl">How hard was set ' + (i+1) + '?</div>';
+    h += '<div class="rpe">' + [6,7,8,9,10].map(v =>
+         '<button data-act="rpe" data-ex="' + ex.id + '" data-i="' + i + '" data-v="' + v + '" class="' +
+         (s.rpe===v?"on":"") + '" type="button" title="' + esc(v + " - " + RPE_HELP[v]) +
+         '" aria-label="' + esc(v + ". " + RPE_HELP[v]) + '">' + v + '</button>').join("") + '</div>';
+    h += '<div class="rpe-help">' +
+         (s.rpe ? '<b>' + s.rpe + '</b> &middot; ' + esc(RPE_HELP[s.rpe])
+                : '6 is easy. 10 means there was no way you could lift one more rep.') +
+         '</div>';
+  });
+
+  const allowed = ex.sets + (e.extra || 0);
+  if (e.sets.length < allowed) {
+    const n = e.sets.length + 1;
+    const prevSet = e.sets[e.sets.length-1];
+    const totalVal = e.weight != null ? e.weight : (t.weight != null ? t.weight : null);
+    const perSide  = isPerSide(ex);
+    // After she switches equipment mid-card the old number means nothing, so the box starts empty.
+    const wVal = (e.blank || totalVal == null) ? "" : (perSide ? perSideFrom(ex, totalVal) : totalVal);
+    const rVal = prevSet ? prevSet.reps : t.reps;
+    h += '<div class="capt">' +
+         (ex.banded ? '' : '<b>' + weightCaption(ex) + '</b>') + '<b>' + (ex.timed ? 'Seconds' : 'Reps') + '</b></div>';
+    h += '<div class="row">';
+    if (!ex.banded) {
+      h += '<div class="step w">' +
+           '<button data-act="w-" data-ex="' + ex.id + '" type="button" aria-label="Less weight">&minus;</button>' +
+           '<input id="w_' + ex.id + '" data-act="wv" data-ex="' + ex.id + '" type="number" inputmode="decimal" step="' +
+           weightStep(ex) + '" value="' + wVal + '" placeholder="lb" aria-label="' + (perSide ? 'Weight per side' : 'Weight') + '">' +
+           '<button data-act="w+" data-ex="' + ex.id + '" type="button" aria-label="More weight">+</button></div>';
+    }
+    h += '<div class="step r"' + (ex.banded ? ' style="flex:1"' : '') + '>' +
+         '<button data-act="r-" data-ex="' + ex.id + '" type="button" aria-label="Fewer reps">&minus;</button>' +
+         '<input id="r_' + ex.id + '" type="number" inputmode="numeric" step="1" value="' + rVal + '" aria-label="Reps">' +
+         '<button data-act="r+" data-ex="' + ex.id + '" type="button" aria-label="More reps">+</button></div>';
+    h += '</div>';
+    if (!ex.banded && totalLine(ex, wVal) !== "") {
+      h += '<div class="totline" id="tot_' + ex.id + '">' + totalLine(ex, wVal) + '</div>';
+    }
+    if (ex.bwOk) h += '<div class="totline">Leave the weight empty for bodyweight.</div>';
+    if (ex.timed) {
+      const on = S.hold && S.hold.exId === ex.id;
+      h += '<button class="addset holdbtn" id="hold_' + ex.id + '" data-act="hold" data-ex="' + ex.id + '" type="button">' +
+           (on ? 'Holding&hellip;' : 'Start the ' + rVal + ' s timer') + '</button>';
+    }
+    h += '<button class="tick" data-act="log" data-ex="' + ex.id + '" type="button">' +
+         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5.5 5.5L20 6"/></svg>' +
+         'Log set ' + n + '</button>';
+    if (n > ex.sets) {
+      h += '<div class="rpe-help">Bonus set ' + (n - ex.sets) + '. It gets saved, but the plan for ' +
+           'next time is still worked out from your first ' + ex.sets + ' sets.</div>';
+    }
+  } else {
+    h += '<button class="addset" data-act="addset" data-ex="' + ex.id + '" type="button">' +
+         '+ Add another set</button>';
+  }
+  h += '</div>';
+  return h;
+}
+
+/* ---------- warm-up sets ----------
+   Main lifts only. Three steps on a bar (empty bar, about 60%, about 85%), two on dumbbells or a
+   typed total. Nothing here is saved to History or touches the coaching. */
+function warmupSets(ex, W){
+  if (!ex.main || ex.banded || W == null || !(W > 0)) return [];
+  const eq = equipFor(ex);
+  const steps = [[0.6, 5], [0.85, 2]];
+  const out = [];
+  if (EQUIP[eq] && EQUIP[eq].perSide) {
+    const bar = baseWeight(ex);
+    if (W - bar < 20) return [];                  // barely more than the bar: no ramp needed
+    out.push({ w: bar, side: 0, reps: 8 });
+    for (const [p, reps] of steps) {
+      // Plates go on in pairs, so round the weight a side up to the next 2.5.
+      const side = Math.ceil(((W * p - bar) / 2) / 2.5) * 2.5;
+      const w = bar + 2 * side;
+      if (side > 0 && w < W && w > out[out.length-1].w) out.push({ w: w, side: side, reps: reps });
+    }
+  } else {
+    if (W < 20) return [];
+    for (const [p, reps] of steps) {
+      const w = Math.round(W * p / 5) * 5;
+      const prev = out.length ? out[out.length-1].w : 0;
+      if (w > 0 && w < W && w > prev) out.push({ w: w, reps: reps });
+    }
+  }
+  return out;
+}
+function warmBlock(ex, W){
+  if (!SHOW_WARMUP_SETS) return "";
+  const ws = warmupSets(ex, W);
+  if (!ws.length) return "";
+  const ticks = (S.draft.warm && S.draft.warm[ex.id]) || [];
+  const bar = isPerSide(ex);
+  let h = '<div class="warm"><div class="warm-h">Warm-up sets &middot; from ' + W + ' lb</div>';
+  ws.forEach(function(x, i){
+    const on = !!ticks[i];
+    const left = bar ? (x.side ? x.side + " a side" : "Empty bar") : "Warm-up " + (i+1);
+    h += '<button class="warm-row' + (on ? " on" : "") + '" data-act="warm" data-ex="' + ex.id + '" data-i="' + i +
+         '" type="button" aria-pressed="' + on + '"><span class="warm-box">' + (on ? "&#10003;" : "") + '</span>' +
+         '<span class="warm-l">' + left + '</span><span class="warm-r">' + x.w + ' lb &times; ' + x.reps + '</span></button>';
+  });
+  h += '<div class="warm-foot">Tap to tick off. Not saved, and never changes the coaching.</div></div>';
+  return h;
+}
+
+function videoLink(P){
+  return P.video ? '<div><a class="vidlink" href="' + esc(P.video) + '" target="_blank" rel="noopener">Watch the form video</a></div>' : '';
+}
+
+function viewSession(){
+  const d = S.draft;
+  const rot = draftRot();
+  const P = PROGRAM[d.day];
+  const list = exercisesFor(d.day, rot);
+
+  let h = '<div class="sessbar"><h1>' + d.day + ' &middot; ' + esc(P.name) + '</h1>' +
+          '<button class="fin" data-act="finish" type="button">Finish</button></div>';
+  h += '<div class="card lastline"><b>Warm up:</b> ' + esc(P.warmup) + videoLink(P) + '</div>';
+
+  for (const ex of list) {
+    const e = entryFor(ex);
+    const t = targetFor(ex);
+    const lift = S.lifts[ex.id];
+    const slot = PROGRAM[d.day].slots.find(s => s.alt && s.options.some(o => o.id === ex.id));
+
+    h += '<div class="card ex">';
+    h += '<div class="ex-head"><h2>' + esc(ex.name) + '</h2><span class="chip ' + t.tone + '">' + esc(t.chip) + '</span></div>';
+    h += '<div class="ex-sub">' + ex.sets + ' sets &times; ' + repText(ex) + ' &middot; rest ' +
+         mmss(ex.rest) + '</div>';
+    if (ex.cue) h += '<div class="ex-cue">' + esc(ex.cue) + '</div>';
+    h += '<div class="coach ' + t.tone + '">' + esc(t.msg);
+    if (lift && lift.date && lift.reps && lift.reps.length) {
+      const ws = lift.weights || [];
+      const varied = ws.length > 1 && ws.some(w => w !== ws[0]);
+      h += '<span class="prev">Last time ' +
+           (varied
+             ? lift.reps.map((r, i) => (ws[i] == null ? "BW" : ws[i]) + "&times;" + r).join(", ") + " lb"
+             : weightLabel(ex, lift.weight, lift.band) + ' &times; ' + lift.reps.join(", ")) +
+           '  &middot;  ' + fmtDate(lift.date) + '</span>';
+    }
+    h += '</div>';
+
+    if (slot) {
+      const other = slot.options.find(o => o.id !== ex.id);
+      h += '<button class="altswap" data-act="swap" data-key="' + slot.alt + '" data-to="' + other.id +
+           '" type="button">Do ' + esc(other.name) + ' instead</button>';
+    }
+    if (ex.fiveable) {
+      h += '<button class="altswap" data-act="five" data-ex="' + ex.id + '" type="button">' +
+           (ex.sets === 5 ? "Switch to 4 sets of 6-8" : "Switch to 5 sets of 5-6") + '</button>';
+    }
+    if (SHOW_EQUIP_PICKER && !ex.banded && ex.id !== "trap_bar") {
+      const eq = equipFor(ex);
+      h += '<div class="eqlbl">Lifting with</div><div class="eqpick">' +
+           EQUIP_ORDER.map(k => '<button data-act="eqpick" data-ex="' + ex.id + '" data-v="' + k + '" class="' +
+             (k === eq ? "on" : "") + '" type="button" aria-label="' + esc(EQUIP[k].name) + '"' +
+             (k === eq ? ' aria-pressed="true"' : '') + '>' + esc(EQUIP[k].short) + '</button>').join("") + '</div>';
+    }
+    if (ex.banded && !ex.noBand) {
+      h += '<div class="bandrow"><label for="b_' + ex.id + '">Band</label>' +
+           '<input id="b_' + ex.id + '" data-act="band" data-ex="' + ex.id + '" value="' + esc(e.band) +
+           '" placeholder="which colour today?"></div>';
+    }
+
+    if (!e.sets.length && !e.blank) h += warmBlock(ex, e.weight != null ? e.weight : t.weight);
+    h += setsBlock(ex, e, t);
+
+    const open = S.openNotes[ex.id];
+    h += '<button class="notebtn" data-act="note" data-ex="' + ex.id + '" type="button">' +
+         (open ? "Hide note" : (e.note ? "Note: " + esc(e.note.slice(0,40)) + (e.note.length>40?"...":"") : "+ Add a note")) + '</button>';
+    if (open) {
+      h += '<textarea class="note" data-act="notetext" data-ex="' + ex.id +
+           '" placeholder="Anything worth remembering next time">' + esc(e.note) + '</textarea>';
+    }
+    h += '</div>';
+  }
+
+  h += '<div class="card lastline">' + physioBlock() + '</div>';
+  h += '<button class="big" data-act="finish" type="button">Finish workout</button>';
+  return h;
+}
+
+function viewDone(){
+  const s = S.sessions[0];
+  const nxt = S.rot.day;
+  const nextList = exercisesFor(nxt, S.rot);
+  let h = '<div class="card hero">';
+  h += '<div class="eyebrow">Logged</div>';
+  h += '<div class="hero-top"><span class="hero-letter">&#10003;</span><span><span class="hero-name">' +
+       esc(s.day + " · " + s.dayName) + '</span><span class="hero-variant">' +
+       (function(){ const n = s.entries.reduce((a,e)=>a+e.sets.length,0);
+         return n + (n === 1 ? ' set' : ' sets'); })() +
+       (s.durationSec != null ? ' in ' + hms(s.durationSec) : '') + '</span></span></div>';
+  h += '<div class="donehead"><span>What you lifted</span><b>Next time:</b></div>';
+  h += '<ul class="preview">';
+  for (const e of s.entries) {
+    const lift = S.lifts[e.id] || {};
+    const skipped = e.skipped || !e.sets || !e.sets.length;
+    h += '<li class="' + (skipped ? "skipped" : "") + '"><div class="pv-n"><b>' + esc(e.name) + '</b><i>' +
+         (skipped ? "Skipped" : setsSummary(e, "bodyweight", " band")) +
+         '</i></div>' +
+         (skipped ? '<div class="pv-t"></div>'
+                  : '<div class="pv-t"><span class="chip ' + ((lift.next&&lift.next.tone)||"hold") + '">' +
+                    esc((lift.next&&lift.next.chip)||"") + '</span></div>') + '</li>';
+  }
+  h += '</ul>';
+  h += '<div class="warmup"><span>Up next</span>' + nxt + ' &middot; ' + esc(PROGRAM[nxt].name) + ' &mdash; ' +
+       esc(nextList.filter(e=>e.main).map(e=>e.name).join(", ")) + '</div>';
+  h += backupLine();
+  h += '<button class="big" data-act="home" type="button">Back to the top</button>';
+  h += '</div>';
+  return h;
+}
+
+/* ---------- history editing ----------
+   Coaching is never patched by hand after an edit. Every lift's state is rebuilt by replaying the
+   whole history oldest first, so what the app recommends always matches what the history shows. */
+function exDefById(id){
+  for (const d of DAYS) {
+    for (const slot of PROGRAM[d].slots) {
+      if (!slot.alt && slot.id === id) return resolve(slot, S.rot);
+      if (slot.alt && slot.options.some(function(o){ return o.id === id; })) {
+        const r = {}; r[slot.alt] = id;
+        return resolve(slot, r);
+      }
+    }
+  }
+  return null;
+}
+function sortSessions(){
+  S.sessions.sort(function(a,b){
+    return String(b.date||"").localeCompare(String(a.date||"")) ||
+           String(b.id||"").localeCompare(String(a.id||""));
+  });
+}
+function rebuildLifts(){
+  const lifts = {};
+  const ordered = S.sessions.slice().sort(function(a,b){
+    return String(a.date||"").localeCompare(String(b.date||"")) ||
+           String(a.id||"").localeCompare(String(b.id||""));
+  });
+  for (const rec of ordered) {
+    for (const en of (rec.entries || [])) {
+      if (!en.sets || !en.sets.length) continue;
+      const ex = exDefById(en.id);
+      if (!ex) continue;
+      lifts[en.id] = progress(ex, en, lifts[en.id]);
+    }
+  }
+  S.lifts = lifts;
+}
+function persistSession(rec){
+  cacheLocal();
+  try { Promise.resolve(pushState()).catch(function(){}); } catch(e){}
+  if (S.db) {
+    try { Promise.resolve(S.db.doc("sessions/" + rec.id).set(rec)).catch(function(){}); } catch(e){}
+  }
+  backupToDrive();
+}
+function removeSessionDoc(id){
+  if (!S.db) return;
+  try {
+    const ref = S.db.doc("sessions/" + id);
+    if (ref && typeof ref.delete === "function") {
+      // If the db has no delete, fall back to a tombstone that loading filters out.
+      Promise.resolve(ref.delete()).catch(function(){
+        try { ref.set({ id:id, deleted:true }); } catch(e){}
+      });
+    } else {
+      ref.set({ id:id, deleted:true });
+    }
+  } catch(e){}
+}
+
+function blankEntry(ex, date){
+  return { id:ex.id, name:ex.name, weight:null, band:null, note:"", date:date,
+           equip: ex.banded ? null : equipFor(ex),
+           hands: ex.banded ? null : handsFor(ex), sets:[] };
+}
+function openEdit(id){
+  const rec = S.sessions.find(function(x){ return x.id === id; });
+  if (!rec) return;
+  const clone = JSON.parse(JSON.stringify(rec));
+  const rot = { squat: clone.squat || S.rot.squat, ham: clone.ham || S.rot.ham };
+  const merged = [];
+  // Show every exercise for that day, so a lift she forgot to log can still be filled in.
+  for (const ex of exercisesFor(clone.day, rot)) {
+    const found = (clone.entries || []).find(function(e){ return e.id === ex.id; });
+    merged.push(Object.assign(blankEntry(ex, clone.date), found || {}));
+  }
+  for (const e of (clone.entries || [])) {
+    if (!merged.some(function(m){ return m.id === e.id; })) merged.push(e);
+  }
+  // Give every set its own weight while editing, so an older record (one weight for the whole
+  // exercise) can be changed set by set. The entry weight is recomputed from the sets on Save.
+  for (const e of merged) {
+    for (const s of (e.sets || [])) s.weight = setW(s, e);
+    e.weight = null;
+  }
+  clone.entries = merged;
+  S.editRec = clone; S.editId = id; S.armDel = null;
+  S.view = "edit"; render();
+}
+function newPastSession(day){
+  if (!PROGRAM[day]) return;
+  const rec = { id: "manual-" + Date.now(), date: todayISO(), day: day,
+                dayName: PROGRAM[day].name, squat: S.rot.squat, ham: S.rot.ham,
+                note: "", entries: [] };
+  S.sessions.unshift(rec);
+  openEdit(rec.id);
+}
+function editEntry(exId){
+  if (!S.editRec) return null;
+  return (S.editRec.entries || []).find(function(e){ return e.id === exId; }) || null;
+}
+function saveEdit(){
+  const rec = S.editRec;
+  if (!rec) return;
+  // Keep every exercise. One with no sets becomes a skipped entry rather than disappearing.
+  rec.entries = (rec.entries || []).map(function(e){
+    const done = !!(e.sets && e.sets.length);
+    let top = null;
+    for (const s of (done ? e.sets : [])) if (s.weight != null && (top == null || s.weight > top)) top = s.weight;
+    return Object.assign({}, e, { skipped: !done, sets: done ? e.sets : [], weight: top });
+  });
+  for (const e of rec.entries) e.date = rec.date;
+  if (PROGRAM[rec.day]) rec.dayName = PROGRAM[rec.day].name;
+  const i = S.sessions.findIndex(function(x){ return x.id === rec.id; });
+  if (i >= 0) S.sessions[i] = rec; else S.sessions.unshift(rec);
+  sortSessions();
+  rebuildLifts();
+  persistSession(rec);
+  S.editRec = null; S.editId = null; S.armDel = null;
+  S.view = "history"; render();
+}
+function deleteEditedSession(){
+  const rec = S.editRec;
+  if (!rec) return;
+  S.sessions = S.sessions.filter(function(x){ return x.id !== rec.id; });
+  rebuildLifts();
+  removeSessionDoc(rec.id);
+  cacheLocal();
+  backupToDrive();
+  try { Promise.resolve(pushState()).catch(function(){}); } catch(e){}
+  S.editRec = null; S.editId = null; S.armDel = null;
+  S.view = "history"; render();
+}
+
+function viewEdit(){
+  const rec = S.editRec;
+  if (!rec) { S.view = "history"; return viewHistory(); }
+
+  let h = '<div class="sessbar"><h1>Edit workout</h1>' +
+          '<button class="fin" data-act="ehsave" type="button">Save</button></div>';
+
+  h += '<div class="card ed-top">' +
+       '<div class="ed-row"><label for="ed_date">Date</label>' +
+       '<input id="ed_date" data-act="ehdate" type="date" value="' + esc(rec.date || "") + '"></div>' +
+       '<div class="ed-row"><label>Workout</label><span class="ed-day">' + esc(rec.day) + ' &middot; ' +
+       esc(rec.dayName || (PROGRAM[rec.day] || {}).name || "") + '</span></div></div>';
+
+  for (const e of rec.entries) {
+    const ex = exDefById(e.id) || { id:e.id, name:e.name, banded:false };
+    h += '<div class="card ex">';
+    h += '<div class="ex-head"><h2>' + esc(e.name || ex.name) + '</h2></div>';
+    if (ex.banded && !ex.noBand) {
+      h += '<div class="bandrow"><label for="eb_' + e.id + '">Band</label>' +
+           '<input id="eb_' + e.id + '" data-act="ehband" data-ex="' + e.id + '" value="' + esc(e.band || "") +
+           '" placeholder="which colour?"></div>';
+    }
+    h += '<div class="ed-sets">';
+    if (e.sets.length) {
+      h += '<div class="ed-set ed-capt"><span class="ed-n"></span>' +
+           (ex.banded ? '' : '<b>Weight</b>') + '<b>Reps</b><b class="ed-c-rpe">How hard</b><span class="ed-c-x"></span></div>';
+    }
+    e.sets.forEach(function(st, i){
+      const sw = setW(st, e);
+      h += '<div class="ed-set"><span class="ed-n">' + (i+1) + '</span>' +
+           (ex.banded ? '' :
+             '<input class="ed-reps" data-act="ehsw" data-ex="' + e.id + '" data-i="' + i + '" type="number" ' +
+             'inputmode="decimal" step="2.5" value="' + (sw == null ? "" : sw) + '" placeholder="BW" ' +
+             'aria-label="Total weight, set ' + (i+1) + '">') +
+           '<input class="ed-reps" data-act="ehreps" data-ex="' + e.id + '" data-i="' + i + '" type="number" ' +
+           'inputmode="numeric" step="1" value="' + st.reps + '" aria-label="Reps, set ' + (i+1) + '">' +
+           '<select data-act="ehrpe" data-ex="' + e.id + '" data-i="' + i + '" aria-label="How hard, set ' + (i+1) + '">' +
+           '<option value="">RPE</option>' +
+           [6,7,8,9,10].map(function(v){
+             return '<option value="' + v + '"' + (st.rpe === v ? ' selected' : '') + '>' + v + '</option>';
+           }).join("") + '</select>' +
+           '<button class="ed-x" data-act="ehdelset" data-ex="' + e.id + '" data-i="' + i +
+           '" type="button" aria-label="Remove set ' + (i+1) + '">&times;</button></div>';
+    });
+    h += '</div>';
+    h += '<button class="addset" data-act="ehaddset" data-ex="' + e.id + '" type="button">+ Add a set</button>';
+    const nk = "ed_" + e.id;
+    h += '<button class="notebtn" data-act="ehnoteopen" data-ex="' + e.id + '" type="button">' +
+         (S.openNotes[nk] ? "Hide note"
+            : (e.note ? "Note: " + esc(e.note.slice(0,40)) + (e.note.length>40?"...":"") : "+ Add a note")) +
+         '</button>';
+    if (S.openNotes[nk]) {
+      h += '<textarea class="note" data-act="ehnote" data-ex="' + e.id +
+           '" placeholder="Anything worth remembering">' + esc(e.note || "") + '</textarea>';
+    }
+    h += '</div>';
+  }
+
+  h += '<button class="big" data-act="ehsave" type="button">Save changes</button>';
+  h += '<button class="big ghost' + (S.armDel === rec.id ? " arm" : "") + '" data-act="ehdel" type="button">' +
+       (S.armDel === rec.id ? "Tap again to delete this workout" : "Delete this workout") + '</button>';
+  h += '<div class="foot">An exercise you leave empty is saved as skipped.</div>';
+  return h;
+}
+
+function viewHistory(){
+  let h = '<div class="sessbar"><h1>History</h1></div>';
+
+  h += '<div class="sec-title">Sessions</div>';
+  if (!S.sessions.length) {
+    h += '<div class="card empty">Nothing logged yet. Finish a workout and it will show up here.</div>';
+  } else {
+    h += '<div class="card">';
+    for (const s of S.sessions) {
+      h += '<div class="h-item"><div class="h-top"><b>' + s.day + ' &middot; ' + esc(s.dayName) + '</b>' +
+           '<time>' + fmtDate(s.date) +
+           (s.durationSec != null ? ' &middot; ' + hms(s.durationSec) : '') + '</time>' +
+           '<button class="h-edit" data-act="ehopen" data-id="' + esc(s.id) + '" type="button">Edit</button>' +
+           '</div><div class="h-body">';
+      for (const e of s.entries) {
+        const skipped = e.skipped || !e.sets || !e.sets.length;
+        if (skipped) {
+          h += '<div class="h-line skipped"><span>' + esc(e.name) + '</span><em>Skipped</em></div>';
+        } else {
+          h += '<div class="h-line"><span>' + esc(e.name) + '</span><em>' + setsSummary(e, "BW", "") + '</em></div>';
+        }
+        if (e.note) h += '<div class="h-note">' + esc(e.note) + '</div>';
+      }
+      if (s.note) h += '<div class="h-line"><span style="color:var(--ink-3)">' + esc(s.note) + '</span></div>';
+      h += '</div></div>';
+    }
+    h += '</div>';
+  }
+
+  h += '<div class="sec-title">Add a workout you never logged</div>';
+  h += '<div class="card pad"><div class="switcher" style="margin-top:0">' +
+       DAYS.map(function(d){
+         return '<button data-act="ehnew" data-day="' + d + '" type="button">' +
+                d + ' &middot; ' + PROGRAM[d].name + '</button>';
+       }).join("") + '</div></div>';
+  return h;
+}
+
+
+/* Every non-banded exercise in the programme, once each, in rotation order. */
+function loadedExercises(){
+  const out = [], seen = {};
+  for (const d of DAYS) {
+    for (const slot of PROGRAM[d].slots) {
+      if (slot.banded) continue;
+      const opts = slot.alt ? slot.options : [{ id:slot.id, name:slot.name }];
+      for (const o of opts) {
+        if (seen[o.id]) continue;
+        seen[o.id] = 1;
+        out.push(Object.assign({}, slot, o, S.settings[o.id] || {}));
+      }
+    }
+  }
+  return out;
+}
+
+function viewSettings(){
+  let h = '<div class="sessbar"><h1>Settings</h1></div>';
+
+  if (SHOW_EQUIP_PICKER) {
+  h += '<div class="sec-title">What you lift it with</div><div class="card">';
+  for (const ex of loadedExercises()) {
+    const eq = equipFor(ex);
+    h += '<div class="eqrow"><div class="eq-n">' + esc(ex.name);
+    if (ex.id === "trap_bar") h += '<i>always the trap bar</i>';
+    else if (EQUIP[eq] && EQUIP[eq].perSide) h += '<i>you type the weight per side</i>';
+    else h += '<i>you type the whole weight</i>';
+    h += '</div>';
+    if (ex.id === "trap_bar") {
+      h += '<span class="fixed">Trap bar</span>';
+    } else {
+      h += '<select data-act="equip" data-ex="' + ex.id + '" aria-label="Equipment for ' + esc(ex.name) + '">' +
+           EQUIP_ORDER.map(k => '<option value="' + k + '"' + (k === eq ? ' selected' : '') + '>' +
+             esc(EQUIP[k].name) + '</option>').join("") + '</select>';
+    }
+    if (eq === "dumbbell") {
+      const hd = handsFor(ex);
+      h += '<div class="hands">' +
+           '<button data-act="hands" data-ex="' + ex.id + '" data-v="each" class="' + (hd==="each"?"on":"") + '" type="button">Each hand</button>' +
+           '<button data-act="hands" data-ex="' + ex.id + '" data-v="one" class="' + (hd==="one"?"on":"") + '" type="button">One hand</button>' +
+           '</div>';
+    }
+    h += '</div>';
+  }
+  h += '</div>';
+  h += '<div class="foot">Logged weight is always the real total. Dumbbells are logged per dumbbell.</div>';
+  }
+
+  h += '<div class="sec-title">During a workout</div><div class="card">';
+  h += '<div class="set-row"><div class="sr-n">Alarm when rest is up' +
+       '<i>beeps until you tap Done</i></div>' +
+       '<div class="hands"><button data-act="pref" data-k="alarm" data-v="on" class="' +
+       (prefOn("alarm") ? "on" : "") + '" type="button">On</button>' +
+       '<button data-act="pref" data-k="alarm" data-v="off" class="' +
+       (prefOn("alarm") ? "" : "on") + '" type="button">Off</button></div></div>';
+  h += '<div class="set-row"><div class="sr-n">Keep the screen awake' +
+       '<i>only while this app is on screen</i></div>' +
+       '<div class="hands"><button data-act="pref" data-k="keepAwake" data-v="on" class="' +
+       (prefOn("keepAwake") ? "on" : "") + '" type="button">On</button>' +
+       '<button data-act="pref" data-k="keepAwake" data-v="off" class="' +
+       (prefOn("keepAwake") ? "" : "on") + '" type="button">Off</button></div></div>';
+  h += '</div>';
+
+  if (SHOW_EQUIP_PICKER) {
+    h += '<div class="sec-title">Empty bar and handle weights</div><div class="card">';
+    for (const k of BAR_ORDER) {
+      h += '<div class="set-row"><div class="sr-n">' + esc(BAR_NAME[k]) + '<i>with nothing loaded on it</i></div>' +
+           '<div class="mini"><button data-act="bar-" data-bar="' + k + '" type="button">&minus;</button>' +
+           '<input data-act="barv" data-bar="' + k + '" type="number" inputmode="decimal" step="2.5" value="' + barWeight(k) + '">' +
+           '<button data-act="bar+" data-bar="' + k + '" type="button">+</button></div></div>';
+    }
+    h += '</div>';
+  }
+
+  h += '<div class="sec-title">Weight jump per session</div><div class="card">';
+  const seen = {};
+  for (const d of DAYS) {
+    for (const s of PROGRAM[d].slots) {
+      const opts = s.alt ? s.options : [{id:s.id, name:s.name}];
+      for (const o of opts) {
+        if (seen[o.id] || s.banded) continue;
+        seen[o.id] = 1;
+        const ex = Object.assign({}, s, o, S.settings[o.id] || {});
+        h += '<div class="set-row"><div class="sr-n">' + esc(o.name) + '<i>how much it adds when you clear the range</i></div>' +
+             '<div class="mini"><button data-act="inc-" data-ex="' + o.id + '" type="button">&minus;</button>' +
+             '<input data-act="incv" data-ex="' + o.id + '" type="number" inputmode="decimal" step="2.5" value="' + (ex.inc||5) + '">' +
+             '<button data-act="inc+" data-ex="' + o.id + '" type="button">+</button></div></div>';
+      }
+    }
+  }
+  h += '</div>';
+
+  h += '<div class="sec-title">Rest between sets</div><div class="card">';
+  const seen2 = {};
+  for (const d of DAYS) {
+    for (const s of PROGRAM[d].slots) {
+      const opts = s.alt ? s.options : [{id:s.id, name:s.name}];
+      for (const o of opts) {
+        if (seen2[o.id]) continue;
+        seen2[o.id] = 1;
+        const ex = Object.assign({}, s, o, S.settings[o.id] || {});
+        h += '<div class="set-row"><div class="sr-n">' + esc(o.name) + '<i>' + mmss(ex.rest||90) + ' on the clock</i></div>' +
+             '<div class="mini"><button data-act="rest-s" data-ex="' + o.id + '" type="button">&minus;</button>' +
+             '<input data-act="restv" data-ex="' + o.id + '" type="number" inputmode="numeric" step="15" value="' + (ex.rest||90) + '">' +
+             '<button data-act="rest+s" data-ex="' + o.id + '" type="button">+</button></div></div>';
+      }
+    }
+  }
+  h += '</div>';
+  h += '<div class="foot">Seconds. Steppers move in 15s.</div>';
+  if (backupReady()) {
+    const p = prefs();
+    h += '<div class="sec-title">Google Drive backup</div><div class="card">';
+    h += '<div class="set-row"><div class="sr-n">Last backup<i>' +
+         (p.driveAt ? esc(fmtStamp(p.driveAt)) : "not yet") + (p.backupPending ? ", one waiting to send" : ", after every workout") + '</i></div>' +
+         '<button class="bkbtn" data-act="backup" type="button">Back up now</button></div>';
+    h += backupLine() + '</div>';
+  }
+  h += '<div class="foot">Build ' + esc(BUILD) + '</div>';
+  return h;
+}
+
+function render(){
+  const app = document.getElementById("app");
+  let body = "";
+  if (S.view === "session" && !S.draft) S.view = "home";
+  if (S.view === "session") body = viewSession();
+  else if (S.view === "history") body = viewHistory();
+  else if (S.view === "edit") body = viewEdit();
+  else if (S.view === "settings") body = viewSettings();
+  else if (S.view === "done" && S.sessions.length) body = viewDone();
+  else { S.view = (S.view === "done") ? "home" : S.view; body = viewHome(); }
+  app.innerHTML = topbar() + body;
+  renderRest();
+  syncClock();
+  syncWake();
+  renderErrorBar();
+}
+
+/* ============================================================
+   EVENTS
+   ============================================================ */
+function stepInput(id, delta, min){
+  const el = document.getElementById(id);
+  if (!el) return;
+  const cur = el.value === "" ? 0 : Number(el.value);
+  const v = Math.max(min, Math.round((cur + delta) * 100) / 100);
+  el.value = v;
+}
+
+/* Rewrites just the sum under the weight box, without re-rendering the card. */
+function updateTotal(exId){
+  const line = document.getElementById("tot_" + exId);
+  if (!line || !S.draft) return;
+  const ex = exercisesFor(S.draft.day, draftRot()).find(e => e.id === exId);
+  const el = document.getElementById("w_" + exId);
+  if (!ex || !el) return;
+  line.innerHTML = totalLine(ex, el.value);
+}
+
+document.addEventListener("click", function(ev){
+  const b = ev.target.closest("[data-act]");
+  if (!b || b.tagName === "INPUT" || b.tagName === "TEXTAREA") return;
+  const a = b.getAttribute("data-act");
+  if (a !== "ditch" && S.armDitch) S.armDitch = false;   // any other tap disarms it
+  const exId = b.getAttribute("data-ex");
+  const curEx = () => exId && S.draft ? exercisesFor(S.draft.day, draftRot()).find(e => e.id === exId) : null;
+
+  if (a === "errclose") { lastError = null; renderErrorBar(); return; }
+
+  try {
+  switch (a) {
+    case "home":
+      // Back out of History or Settings to wherever they were opened from, so a workout
+      // is never lost just because she looked something up mid-session.
+      S.view = (S.returnTo === "session" && S.draft) ? "session" : "home";
+      S.returnTo = null; S.editId = null; S.armDel = null;
+      render(); break;
+    case "history":
+      S.returnTo = (S.view === "session" && S.draft) ? "session" : "home";
+      S.view = "history"; S.editId = null; render(); break;
+    case "settings":
+      S.returnTo = (S.view === "session" && S.draft) ? "session" : "home";
+      S.view = "settings"; render(); break;
+
+    case "start":  startSession(S.rot.day); break;
+    case "resume": S.view = "session"; render(); break;
+    case "ditch":
+      // Two taps instead of confirm(), which a sandboxed frame can block. The first tap arms
+      // the button, the second does it.
+      if (S.armDitch) { S.armDitch = false; S.draft = null; saveDraft(); render(); }
+      else { S.armDitch = true; render(); }
+      break;
+    case "pick":
+      S.rot.day = b.getAttribute("data-day");
+      pushState(); render();
+      break;
+
+    case "w-": { const ex = curEx(); if (ex) { stepInput("w_"+exId, -weightStep(ex), 0); updateTotal(exId); } break; }
+    case "w+": { const ex = curEx(); if (ex) { stepInput("w_"+exId, weightStep(ex), 0); updateTotal(exId); } break; }
+    case "r-": stepInput("r_"+exId, -1, 1); break;
+    case "r+": stepInput("r_"+exId, 1, 1); break;
+    case "log": logSet(exId); break;
+    case "addset": {
+      if (!S.draft || !S.draft.entries[exId]) break;
+      const en = S.draft.entries[exId];
+      en.extra = (en.extra || 0) + 1;
+      saveDraft(); render();
+      break;
+    }
+    case "warm": {
+      if (!S.draft) break;
+      const i = Number(b.getAttribute("data-i"));
+      S.draft.warm = Object.assign({}, S.draft.warm);
+      const row = (S.draft.warm[exId] || []).slice();
+      row[i] = !row[i];
+      S.draft.warm[exId] = row;
+      saveDraft(); render();
+      break;
+    }
+    case "undo": undoSet(exId, Number(b.getAttribute("data-i"))); break;
+    case "rpe": setRpe(exId, Number(b.getAttribute("data-i")), Number(b.getAttribute("data-v"))); break;
+
+    case "note":
+      S.openNotes[exId] = !S.openNotes[exId];
+      render();
+      break;
+
+    case "swap": {
+      const key = b.getAttribute("data-key"), to = b.getAttribute("data-to");
+      if (S.draft) { S.draft[key] = to; saveDraft(); }
+      S.rot[key] = to; pushState(); render();
+      break;
+    }
+    case "pref": {
+      S.prefs = Object.assign({}, S.prefs);
+      S.prefs[b.getAttribute("data-k")] = (b.getAttribute("data-v") === "on");
+      if (!prefOn("alarm")) cancelAlarm();
+      pushState(); render();
+      break;
+    }
+
+    case "bar-": case "bar+": {
+      const key = b.getAttribute("data-bar");
+      const base = barWeight(key);
+      S.bars = Object.assign({}, S.bars);
+      S.bars[key] = Math.max(0, Math.round((base + (a === "bar+" ? 2.5 : -2.5)) * 100) / 100);
+      pushState(); render();
+      break;
+    }
+
+    case "eqpick": {
+      const v = b.getAttribute("data-v");
+      if (!EQUIP[v] || !S.draft) break;
+      S.settings = Object.assign({}, S.settings);
+      S.settings[exId] = Object.assign({}, S.settings[exId] || {}, { equip: v });
+      const en = S.draft.entries[exId];
+      if (en && !en.sets.length) { en.weight = null; en.blank = true; }
+      saveDraft(); pushState(); render();
+      break;
+    }
+    case "ehopen":   openEdit(b.getAttribute("data-id")); break;
+    case "ehnew":    newPastSession(b.getAttribute("data-day")); break;
+    case "ehsave":   saveEdit(); break;
+    case "ehdel":
+      if (S.armDel === (S.editRec && S.editRec.id)) deleteEditedSession();
+      else { S.armDel = S.editRec && S.editRec.id; render(); }
+      break;
+    case "ehaddset": {
+      const en = editEntry(exId);
+      if (!en) break;
+      const ex = exDefById(exId);
+      const last = en.sets[en.sets.length - 1];
+      en.sets.push({ reps: last ? last.reps : (ex ? ex.repLow : 8), rpe: null,
+                     weight: last ? (last.weight != null ? last.weight : null) : null });
+      render();
+      break;
+    }
+    case "ehdelset": {
+      const en = editEntry(exId);
+      if (!en) break;
+      en.sets.splice(Number(b.getAttribute("data-i")), 1);
+      render();
+      break;
+    }
+    case "ehnoteopen": {
+      const k = "ed_" + exId;
+      S.openNotes[k] = !S.openNotes[k];
+      render();
+      break;
+    }
+
+    case "hands": {
+      const cur = S.settings[exId] || {};
+      S.settings = Object.assign({}, S.settings);
+      S.settings[exId] = Object.assign({}, cur, { hands: b.getAttribute("data-v") });
+      pushState(); render();
+      break;
+    }
+
+    case "five": {
+      const cur = S.settings[exId] || {};
+      S.settings = Object.assign({}, S.settings);
+      S.settings[exId] = Object.assign({}, cur, { five: !cur.five });
+      pushState(); render();
+      break;
+    }
+
+    case "finish": finishSession(); break;
+    case "backup": backupToDrive(); break;
+
+    case "physio": S.physioOpen = !S.physioOpen; render(); break;
+    case "hold": startHold(exId); break;
+
+    case "rest-": bumpRest(-30); break;
+    case "rest+": bumpRest(30); break;
+    case "rest0": stopRest(); break;
+
+    case "inc-": case "inc+": {
+      const cur = S.settings[exId] || {};
+      const base = cur.inc != null ? cur.inc : 5;
+      S.settings = Object.assign({}, S.settings);
+      S.settings[exId] = Object.assign({}, cur, { inc: Math.max(1.25, base + (a==="inc+" ? 2.5 : -2.5)) });
+      pushState(); render();
+      break;
+    }
+    case "rest-s": case "rest+s": {
+      const cur = S.settings[exId] || {};
+      const dflt = defaultRest(exId);
+      const base = cur.rest != null ? cur.rest : dflt;
+      S.settings = Object.assign({}, S.settings);
+      S.settings[exId] = Object.assign({}, cur, { rest: clamp(base + (a==="rest+s" ? 15 : -15), 15, 600) });
+      pushState(); render();
+      break;
+    }
+  }
+  } catch(e){ showError('Tap "' + a + '"', e); }
+});
+
+function defaultRest(id){
+  for (const d of DAYS) for (const s of PROGRAM[d].slots) {
+    if (s.id === id) return s.rest;
+    if (s.alt && s.options.some(o=>o.id===id)) return s.rest;
+  }
+  return 90;
+}
+
+document.addEventListener("input", function(ev){
+  const el = ev.target.closest("[data-act]");
+  if (el && el.getAttribute("data-act") === "wv") updateTotal(el.getAttribute("data-ex"));
+});
+
+document.addEventListener("change", function(ev){
+  const el = ev.target.closest("[data-act]");
+  if (!el) return;
+  const a = el.getAttribute("data-act"), exId = el.getAttribute("data-ex");
+  if (a === "band" && S.draft && S.draft.entries[exId]) {
+    S.draft.entries[exId].band = el.value; saveDraft();
+  } else if (a === "notetext" && S.draft && S.draft.entries[exId]) {
+    S.draft.entries[exId].note = el.value; saveDraft();
+  } else if (a === "ehdate") {
+    if (S.editRec) S.editRec.date = el.value;
+  } else if (a === "ehsw") {
+    const en = editEntry(exId);
+    const i = Number(el.getAttribute("data-i"));
+    const v = el.value === "" ? null : Number(el.value);
+    if (en && en.sets[i]) en.sets[i].weight = (v == null || isNaN(v)) ? null : Math.max(0, v);
+  } else if (a === "ehband") {
+    const en = editEntry(exId);
+    if (en) en.band = el.value || null;
+  } else if (a === "ehnote") {
+    const en = editEntry(exId);
+    if (en) en.note = el.value;
+  } else if (a === "ehreps") {
+    const en = editEntry(exId);
+    const i = Number(el.getAttribute("data-i"));
+    if (en && en.sets[i]) en.sets[i].reps = Math.max(1, Number(el.value) || 1);
+  } else if (a === "ehrpe") {
+    const en = editEntry(exId);
+    const i = Number(el.getAttribute("data-i"));
+    if (en && en.sets[i]) en.sets[i].rpe = el.value === "" ? null : Number(el.value);
+  } else if (a === "equip") {
+    S.settings = Object.assign({}, S.settings);
+    S.settings[exId] = Object.assign({}, S.settings[exId] || {}, { equip: el.value });
+    pushState(); render();
+  } else if (a === "barv") {
+    const key = el.getAttribute("data-bar");
+    const v = Math.max(0, Number(el.value) || 0);
+    S.bars = Object.assign({}, S.bars); S.bars[key] = v;
+    pushState(); render();
+  } else if (a === "incv") {
+    const v = Math.max(1.25, Number(el.value) || 5);
+    S.settings = Object.assign({}, S.settings);
+    S.settings[exId] = Object.assign({}, S.settings[exId] || {}, { inc: v });
+    pushState();
+  } else if (a === "restv") {
+    const v = clamp(Number(el.value) || 90, 15, 600);
+    S.settings = Object.assign({}, S.settings);
+    S.settings[exId] = Object.assign({}, S.settings[exId] || {}, { rest: v });
+    pushState();
+  }
+});
+
+document.addEventListener("keydown", function(ev){
+  if (ev.key === "Enter" && ev.target.id && /^[wr]_/.test(ev.target.id)) {
+    ev.preventDefault();
+    logSet(ev.target.id.slice(2));
+  }
+});
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+loadLocal();
+render();
+connect();
+// Light up the Drive backup section once the connector capability answers.
+// A backup that could not get through last time goes again now.
+if (prefs().backupPending) backupToDrive();
+</script>
