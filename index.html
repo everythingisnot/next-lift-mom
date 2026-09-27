@@ -550,7 +550,7 @@ const PROGRAM = {
         cue:"Squeeze your glutes to lift your hips.",
         bwNext:{ chip:"Level up", msg:"Top of the range on every set. Next time try it single-leg, or rest a dumbbell on your hips." } },
       { id:"clamshell", name:"Banded clamshell", banded:true, per:"per side", sets:2, repLow:12, repHigh:15, rest:90,
-        cue:"Band above the knees once bodyweight is too easy. Leave the band empty if you use none." },
+        cue:"Band just above the knees." },
       { id:"dead_bug", name:"Dead bug", banded:true, noBand:true, per:"per side", sets:2, repLow:6, repHigh:8, rest:90,
         cue:"2-second pause at the bottom." },
       { id:"side_plank", name:"Side plank", banded:true, noBand:true, timed:true, per:"per side", sets:3, repLow:10, repHigh:10, rest:90,
@@ -627,7 +627,7 @@ const HANDS_DEFAULT = {};
 
 /* Bumped on every publish, and shown at the foot of Settings, so it is possible to tell from
    the phone which build is actually running. */
-const BUILD = "mom-2026-09-25a";
+const BUILD = "mom-2026-09-27a";
 
 /* Dates follow the clock on her phone. toISOString() is UTC, which put evening workouts on
    tomorrow. */
@@ -880,7 +880,7 @@ function firstTarget(ex){
     chip: "First time",
     msg: ex.timed ? "Hold for " + ex.repLow + " seconds each side. Use the timer, then log it."
       : ex.noBand ? "Log how many you do. Slow and controlled."
-      : ex.banded ? "Log the band you use, if any, and how many you get."
+      : ex.banded ? "Log the band colour you use and how many you get."
       : ex.bwOk ? "Type a weight, or leave it empty for bodyweight. From then on it fills itself in."
       : "Type the weight you plan to use. From then on it fills itself in."
   };
