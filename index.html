@@ -625,9 +625,96 @@ const EQUIP_DEFAULT = {
 /* Dumbbell work is logged per dumbbell either way; this only changes the wording on screen. */
 const HANDS_DEFAULT = {};
 
+/* ============================================================
+   HER WEIGHTS  (from Nerissa, 2026-11-07)
+   Every weight the app suggests is one she can actually pick up. Edit this list when she gets
+   new weights. Kettlebell "22" is the 10 kg bell (22.1 lb).
+   ============================================================ */
+const GEAR = {
+  dumbbells:   [5, 10, 12, 15, 20, 25],               // per hand: adjustable pair 5-25 in 5s, plus a fixed pair of 12s
+  kettlebells: [15, 15, 20, 22, 22],                   // one of each listed
+  plates:      [2.5, 2.5, 5, 5, 10, 10, 25, 25, 45, 45] // on the plate-loaded cable machine
+};
+/* How each weighted move is loaded.
+   pair = a dumbbell in each hand, logged per dumbbell. single = one weight held (goblet, hips).
+   hold = the total held, one weight or a matching pair. cable = plates on the cable machine. */
+const LOAD_KIND = {
+  shoulder_press:"pair", incline_bench:"pair", reverse_lunge:"pair",
+  goblet_squat:"single", glute_bridge:"single",
+  rdl:"hold",
+  lat_pulldown:"cable", cable_row:"cable"
+};
+function uniqSorted(a){ return Array.from(new Set(a)).sort(function(x,y){ return x-y; }); }
+function twins(a){ return uniqSorted(a.filter(function(w, i){ return a.indexOf(w) !== i; })); }
+/* Every plate total the machine can take, with the fewest plates that make it. */
+const CABLE_SUMS = (function(){
+  const p = GEAR.plates, best = {};
+  for (let m = 1; m < (1 << p.length); m++) {
+    let sum = 0; const used = [];
+    for (let i = 0; i < p.length; i++) if (m & (1 << i)) { sum += p[i]; used.push(p[i]); }
+    sum = Math.round(sum * 100) / 100;
+    if (!best[sum] || used.length < best[sum].length) best[sum] = used.sort(function(x,y){ return y-x; });
+  }
+  return best;
+})();
+function loadsFor(ex){
+  const k = ex && LOAD_KIND[ex.id];
+  const db = GEAR.dumbbells, kb = GEAR.kettlebells;
+  if (k === "pair")   return db.slice();
+  if (k === "single") return uniqSorted(db.concat(kb));
+  if (k === "hold")   return uniqSorted(db.concat(kb, db.map(function(w){ return 2*w; }),
+                                                       twins(kb).map(function(w){ return 2*w; })));
+  if (k === "cable")  return Object.keys(CABLE_SUMS).map(Number).sort(function(x,y){ return x-y; });
+  return null;
+}
+/* The next weight up that she owns, or null when she is already at the heaviest. */
+function nextLoad(ex, w){
+  const o = loadsFor(ex);
+  if (!o) return w + (ex.inc || 5);
+  const up = o.filter(function(x){ return x > w + 0.01; });
+  return up.length ? up[0] : null;
+}
+function prevLoad(ex, w){
+  const o = loadsFor(ex) || [];
+  const down = o.filter(function(x){ return x < w - 0.01; });
+  return down.length ? down[down.length-1] : null;
+}
+/* Plain words for what to pick up, e.g. "one 15 lb kettlebell or dumbbell". */
+function loadHint(ex, w){
+  const k = LOAD_KIND[ex.id];
+  if (!k || w == null) return "";
+  const db = GEAR.dumbbells.indexOf(w) >= 0, kb = GEAR.kettlebells.indexOf(w) >= 0;
+  const bell = function(x){ return x === 22 ? "10 kg kettlebell" : x + " lb kettlebell"; };
+  const one = function(){
+    if (w === 12) return "the 12 lb dumbbell";
+    if (db && kb) return "one " + w + " lb dumbbell or the " + bell(w);
+    if (kb) return "the " + bell(w);
+    if (db) return "one dumbbell set to " + w;
+    return "";
+  };
+  if (k === "pair") return w === 12 ? "the fixed 12 lb dumbbells" : "dumbbells set to " + w + " each";
+  if (k === "single") return one();
+  if (k === "hold") {
+    const s = one(); if (s) return s;
+    const h = w / 2;
+    if (h === 22) return "both 10 kg kettlebells";
+    if (twins(GEAR.kettlebells).indexOf(h) >= 0 && GEAR.dumbbells.indexOf(h) >= 0)
+      return "two " + h + " lb kettlebells or dumbbells";
+    if (h === 12) return "both fixed 12 lb dumbbells";
+    if (GEAR.dumbbells.indexOf(h) >= 0) return "two dumbbells set to " + h;
+    return "";
+  }
+  if (k === "cable") { const c = CABLE_SUMS[w]; return c ? "plates: " + c.join(" + ") : ""; }
+  return "";
+}
+
 /* Bumped on every publish, and shown at the foot of Settings, so it is possible to tell from
    the phone which build is actually running. */
-const BUILD = "mom-2026-09-27a";
+const BUILD = "mom-2026-11-07a";
+/* Bumped whenever the coaching rules change. On first open after a bump, every lift is rebuilt
+   from her saved history so the new rules apply to her next workout straight away.
+   2 = second "Hold" in a row moves her up; weights follow the GEAR list. */
+const COACH_V = 2;
 
 /* Dates follow the clock on her phone. toISOString() is UTC, which put evening workouts on
    tomorrow. */
@@ -867,10 +954,20 @@ function setsSummary(e, bw, bandWord){
 /* ============================================================
    PROGRESSION ENGINE  (double progression + RPE brake + deload)
    ============================================================ */
-function deloadTo(w, inc){
+function deloadTo(w, inc, ex){
   if (!w) return w;
+  const o = ex && loadsFor(ex);
+  if (o) {
+    // Heaviest weight she owns at or under 90%, or at least one step down.
+    const under = o.filter(function(x){ return x <= w * 0.9 + 0.01; });
+    if (under.length) return under[under.length-1];
+    const p = prevLoad(ex, w);
+    return p != null ? p : w;
+  }
   return Math.max(inc, Math.floor((w * 0.9) / inc) * inc);
 }
+/* " (one 15 lb dumbbell or the 15 lb kettlebell)" after a weight, when there is a hint. */
+function hintTail(ex, w){ const h = loadHint(ex, w); return h ? " (" + h + ")" : ""; }
 
 function firstTarget(ex){
   return {
@@ -906,6 +1003,11 @@ function progress(ex, entry, prev){
   const avgRpe = jRpes.length ? jRpes.reduce((a,b)=>a+b,0) / jRpes.length : null;
   let stalls = (prev && prev.stalls) || 0;
   let next;
+  // "Stay here one more session" is said once per weight. Once she has already reached the top of
+  // the range at this same weight (and band), reaching it again moves her up, however hard it felt.
+  // If she was told to go up but stayed put, it keeps telling her to go up rather than holding again.
+  const topKey = String(w) + "|" + (entry.band || (prev && prev.band) || "");
+  const heldBefore = !!(prev && prev.topAt === topKey);
 
   if (!hitLow) {
     stalls += 1;
@@ -917,9 +1019,9 @@ function progress(ex, entry, prev){
             ? "Two rough sessions. Go back up to a thicker band for a couple of weeks, then work down again."
             : "Two rough sessions. Drop to a lighter band for a couple of weeks, then work back up." };
       } else if (w) {
-        const d = deloadTo(w, inc);
+        const d = deloadTo(w, inc, ex);
         next = { weight:d, reps:ex.repLow, tone:"warn", chip:"Deload",
-          msg:"Two stalled sessions. Drop to " + d + " lb and build back up from " + ex.repLow + " reps." };
+          msg:"Two stalled sessions. Drop to " + d + " lb" + hintTail(ex, d) + " and build back up from " + ex.repLow + " reps." };
       } else {
         next = { weight:null, reps:ex.repLow, tone:"warn", chip:"Ease off",
           msg:"Two stalled sessions. Cut a set or slow it down for a couple of weeks." };
@@ -928,21 +1030,30 @@ function progress(ex, entry, prev){
       next = { weight:w, reps:ex.repLow, tone:"hold", chip:"Repeat",
         msg:"You came up short of " + ex.repLow + ". Same weight again, get all " + ex.sets + " sets to " + ex.repLow + "." };
     }
-  } else if (hitTop && avgRpe != null && avgRpe >= 9) {
+  } else if (hitTop && avgRpe != null && avgRpe >= 9 && !heldBefore) {
     stalls = 0;
     next = { weight:w, reps:ex.repHigh, tone:"hold", chip:"Hold",
-      msg:"You hit the top of the range but rated it " + (Math.round(avgRpe*10)/10) + ". Stay here one more session, then add weight." };
+      msg:"You hit the top of the range but rated it " + (Math.round(avgRpe*10)/10) +
+          ". Stay here one more session. Hit the top again and you move up, even if it feels hard." };
   } else if (hitTop) {
     stalls = 0;
+    const up = w ? nextLoad(ex, w) : null;
+    const lead = heldBefore ? "Top of the range again at this weight. Time to move up. " : "";
     if (ex.banded) {
       next = ex.assistBand
         ? { weight:null, reps:ex.repHigh, tone:"good", chip:"Lighter band",
             msg:"Clean sweep. Next time switch to a lighter band than last time." }
         : { weight:null, reps:ex.repLow, tone:"good", chip:"Stronger band",
             msg:"Clean sweep. Next time use a stronger band and start again at " + ex.repLow + " reps." };
+    } else if (w && up == null) {
+      next = { weight:w, reps:ex.repHigh, tone:"good", chip:"Heaviest you have",
+        msg:lead + "All " + ex.sets + " sets at " + ex.repHigh + " with the heaviest weight you have. " +
+            "Stay at " + w + " lb and lower each rep slowly. Time for heavier weights." };
     } else if (w) {
-      next = { weight:w + inc, reps:ex.repLow, tone:"good", chip:"Add " + inc + " lb",
-        msg:"All " + ex.sets + " sets at " + ex.repHigh + ". Go to " + (w+inc) + " lb and start again at " + ex.repLow + " reps." };
+      const step = Math.round((up - w) * 100) / 100;
+      next = { weight:up, reps:ex.repLow, tone:"good", chip:"Add " + step + " lb",
+        msg:lead + "All " + ex.sets + " sets at " + ex.repHigh + ". Go to " + up + " lb" + hintTail(ex, up) +
+            " and start again at " + ex.repLow + " reps." };
     } else {
       next = { weight:null, reps:ex.repHigh, tone:"good", chip:"Add load",
         msg:"Top of the range on every set. Hold a light plate next time, or slow the lowering right down." };
@@ -974,6 +1085,7 @@ function progress(ex, entry, prev){
     band: entry.band || (prev && prev.band) || null,
     date: entry.date,
     stalls: stalls,
+    topAt: hitTop ? topKey : null,
     next: next,
     history: hist
   };
@@ -990,7 +1102,7 @@ function bodyCoach(ex, next, judged, hitTop){
   else if (n.chip === "Add a rep")
     n.msg = "Aim for " + n.reps + unit + " on every set next time.";
   else if (n.chip === "Hold")
-    n.msg = "You hit the top of the range but it felt very hard. Stay here one more session.";
+    n.msg = "You hit the top of the range but it felt very hard. Stay here one more session. Do it again and you move up.";
   else if (hitTop)
     Object.assign(n, ex.bwNext || { chip:"Add a challenge",
       msg:"Top of the range on every set. Next time slow each rep right down." });
@@ -1627,7 +1739,7 @@ function setsBlock(ex, e, t){
       h += '<div class="step w">' +
            '<button data-act="w-" data-ex="' + ex.id + '" type="button" aria-label="Less weight">&minus;</button>' +
            '<input id="w_' + ex.id + '" data-act="wv" data-ex="' + ex.id + '" type="number" inputmode="decimal" step="' +
-           weightStep(ex) + '" value="' + wVal + '" placeholder="lb" aria-label="' + (perSide ? 'Weight per side' : 'Weight') + '">' +
+           (loadsFor(ex) ? 'any' : weightStep(ex)) + '" value="' + wVal + '" placeholder="lb" aria-label="' + (perSide ? 'Weight per side' : 'Weight') + '">' +
            '<button data-act="w+" data-ex="' + ex.id + '" type="button" aria-label="More weight">+</button></div>';
     }
     h += '<div class="step r"' + (ex.banded ? ' style="flex:1"' : '') + '>' +
@@ -1834,6 +1946,15 @@ function sortSessions(){
     return String(b.date||"").localeCompare(String(a.date||"")) ||
            String(b.id||"").localeCompare(String(a.id||""));
   });
+}
+/* One-time replay when the coaching rules change (see COACH_V). History itself is untouched. */
+function migrateCoaching(){
+  if (prefs().coachV === COACH_V) return;
+  try {
+    if (S.sessions && S.sessions.length) rebuildLifts();
+    S.prefs = Object.assign({}, S.prefs, { coachV: COACH_V });
+    cacheLocal();
+  } catch(e){ /* leave the old coaching in place rather than break the app */ }
 }
 function rebuildLifts(){
   const lifts = {};
@@ -2127,23 +2248,31 @@ function viewSettings(){
     h += '</div>';
   }
 
-  h += '<div class="sec-title">Weight jump per session</div><div class="card">';
+  // Weights now step through what she owns, so this list replaces the old "weight jump" controls.
+  h += '<div class="sec-title">Weights at home</div><div class="card">' +
+       '<div class="set-row"><div class="sr-n">Dumbbells<i>' + GEAR.dumbbells.join(", ") + ' lb in each hand</i></div></div>' +
+       '<div class="set-row"><div class="sr-n">Kettlebells<i>' +
+         GEAR.kettlebells.map(function(w){ return w === 22 ? "10 kg" : w + " lb"; }).join(", ") + '</i></div></div>' +
+       '<div class="set-row"><div class="sr-n">Cable machine plates<i>' + GEAR.plates.join(", ") + ' lb</i></div></div>' +
+       '</div><div class="foot">Suggestions only use these. Got new weights? Tell Nerissa.</div>';
+
+  let incRows = "";
   const seen = {};
   for (const d of DAYS) {
     for (const s of PROGRAM[d].slots) {
       const opts = s.alt ? s.options : [{id:s.id, name:s.name}];
       for (const o of opts) {
-        if (seen[o.id] || s.banded) continue;
+        if (seen[o.id] || s.banded || LOAD_KIND[o.id]) continue;
         seen[o.id] = 1;
         const ex = Object.assign({}, s, o, S.settings[o.id] || {});
-        h += '<div class="set-row"><div class="sr-n">' + esc(o.name) + '<i>how much it adds when you clear the range</i></div>' +
+        incRows += '<div class="set-row"><div class="sr-n">' + esc(o.name) + '<i>how much it adds when you clear the range</i></div>' +
              '<div class="mini"><button data-act="inc-" data-ex="' + o.id + '" type="button">&minus;</button>' +
              '<input data-act="incv" data-ex="' + o.id + '" type="number" inputmode="decimal" step="2.5" value="' + (ex.inc||5) + '">' +
              '<button data-act="inc+" data-ex="' + o.id + '" type="button">+</button></div></div>';
       }
     }
   }
-  h += '</div>';
+  if (incRows) h += '<div class="sec-title">Weight jump per session</div><div class="card">' + incRows + '</div>';
 
   h += '<div class="sec-title">Rest between sets</div><div class="card">';
   const seen2 = {};
@@ -2251,8 +2380,21 @@ document.addEventListener("click", function(ev){
       pushState(); render();
       break;
 
-    case "w-": { const ex = curEx(); if (ex) { stepInput("w_"+exId, -weightStep(ex), 0); updateTotal(exId); } break; }
-    case "w+": { const ex = curEx(); if (ex) { stepInput("w_"+exId, weightStep(ex), 0); updateTotal(exId); } break; }
+    case "w-": case "w+": {
+      const ex = curEx(); if (!ex) break;
+      const el = document.getElementById("w_" + exId);
+      if (el && loadsFor(ex)) {
+        // Step through the weights she owns, not a fixed jump.
+        const cur = el.value === "" ? 0 : Number(el.value);
+        const v = a === "w+" ? nextLoad(ex, cur) : prevLoad(ex, cur);
+        if (v != null) el.value = v;
+        else if (a === "w-") el.value = "";
+      } else {
+        stepInput("w_"+exId, (a === "w+" ? 1 : -1) * weightStep(ex), 0);
+      }
+      updateTotal(exId);
+      break;
+    }
     case "r-": stepInput("r_"+exId, -1, 1); break;
     case "r+": stepInput("r_"+exId, 1, 1); break;
     case "log": logSet(exId); break;
@@ -2467,6 +2609,7 @@ document.addEventListener("keydown", function(ev){
    BOOT
    ============================================================ */
 loadLocal();
+migrateCoaching();
 render();
 connect();
 // Light up the Drive backup section once the connector capability answers.
