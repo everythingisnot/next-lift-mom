@@ -545,10 +545,10 @@ const PROGRAM = {
       { id:"goblet_squat", name:"Goblet squat", main:true, sets:3, repLow:8, repHigh:10, rest:120, inc:2.5,
         cue:"One dumbbell held upright at your chest." },
       { id:"reverse_lunge", name:"Reverse lunge", bwOk:true, per:"per leg", sets:3, repLow:8, repHigh:10, rest:90, inc:2.5,
-        bwNext:{ chip:"Add weight", msg:"Top of the range on every set. Next time hold a light dumbbell in each hand." } },
+        bwNext:{ chip:"Add weight", msg:"Top of the range on every set last time. This time hold a 5 lb dumbbell in each hand." } },
       { id:"glute_bridge", name:"Glute bridge", bwOk:true, sets:3, repLow:12, repHigh:15, rest:90, inc:5,
         cue:"Squeeze your glutes to lift your hips.",
-        bwNext:{ chip:"Level up", msg:"Top of the range on every set. Next time try it single-leg, or rest a dumbbell on your hips." } },
+        bwNext:{ chip:"Level up", msg:"Top of the range on every set last time. This time try it single-leg, or rest a dumbbell on your hips." } },
       { id:"clamshell", name:"Banded clamshell", banded:true, per:"per side", sets:2, repLow:12, repHigh:15, rest:90,
         cue:"Band just above the knees." },
       { id:"dead_bug", name:"Dead bug", banded:true, noBand:true, per:"per side", sets:2, repLow:6, repHigh:8, rest:90,
@@ -563,13 +563,13 @@ const PROGRAM = {
     name: "Upper body push",
     warmup: "Arm circles, then light band pull-aparts",
     slots: [
-      { id:"shoulder_press", name:"Seated dumbbell shoulder press", main:true, sets:3, repLow:8, repHigh:10, rest:120, inc:2.5,
+      { id:"shoulder_press", name:"Seated dumbbell shoulder press", main:true, sets:3, repLow:8, repHigh:10, stretch:12, rest:120, inc:2.5,
         cue:"Bench one notch back from upright. Done first on purpose: best for bone." },
-      { id:"incline_bench", name:"Incline dumbbell bench press", main:true, sets:3, repLow:8, repHigh:10, rest:120, inc:2.5,
+      { id:"incline_bench", name:"Incline dumbbell bench press", main:true, sets:3, repLow:8, repHigh:10, stretch:12, rest:120, inc:2.5,
         cue:"Bench at about 30 to 45 degrees." },
       { id:"incline_pushup", name:"Incline push-up", banded:true, noBand:true, sets:2, repLow:8, repHigh:12, rest:90,
         cue:"Hands flat on a countertop or wall.",
-        bwNext:{ chip:"Go lower", msg:"Top of the range on every set. Next time use a lower surface, like a sturdy table." } }
+        bwNext:{ chip:"Go lower", msg:"Top of the range on every set last time. This time use a lower surface, like a sturdy table." } }
     ]
   },
   C: {
@@ -618,7 +618,7 @@ const BAR_ORDER   = ["barbell","ssb","trap"];
 
 /* Sensible starting point per exercise; she can change any of them in Settings. */
 const EQUIP_DEFAULT = {
-  goblet_squat:"total", reverse_lunge:"dumbbell", glute_bridge:"total",
+  goblet_squat:"total", reverse_lunge:"total", glute_bridge:"total",
   shoulder_press:"dumbbell", incline_bench:"dumbbell",
   rdl:"total", lat_pulldown:"total", cable_row:"total"
 };
@@ -639,7 +639,8 @@ const GEAR = {
    pair = a dumbbell in each hand, logged per dumbbell. single = one weight held (goblet, hips).
    hold = the total held, one weight or a matching pair. cable = plates on the cable machine. */
 const LOAD_KIND = {
-  shoulder_press:"pair", incline_bench:"pair", reverse_lunge:"pair",
+  shoulder_press:"pair", incline_bench:"pair",
+  reverse_lunge:"lunge",   // total weight held: one weight at the chest, or a dumbbell in each hand
   goblet_squat:"single", glute_bridge:"single",
   rdl:"hold",
   lat_pulldown:"cable", cable_row:"cable"
@@ -661,6 +662,7 @@ function loadsFor(ex){
   const k = ex && LOAD_KIND[ex.id];
   const db = GEAR.dumbbells, kb = GEAR.kettlebells;
   if (k === "pair")   return db.slice();
+  if (k === "lunge")  return LUNGE_STEPS.slice();
   if (k === "single") return uniqSorted(db.concat(kb));
   if (k === "hold")   return uniqSorted(db.concat(kb, db.map(function(w){ return 2*w; }),
                                                        twins(kb).map(function(w){ return 2*w; })));
@@ -679,10 +681,22 @@ function prevLoad(ex, w){
   const down = o.filter(function(x){ return x < w - 0.01; });
   return down.length ? down[down.length-1] : null;
 }
+/* Lunge steps by total weight held (Nerissa, 2026-11-07): two 5s, then one weight at the chest
+   like the goblet squat (12, 15, 20, 10 kg), then a dumbbell in each hand from 24 up. */
+const LUNGE_STEPS = [10, 12, 15, 20, 22, 24, 30, 40, 50];
+function lungeHint(w, short){
+  if (w === 12) return short ? "12 lb dumbbell at your chest" : "one 12 lb dumbbell at your chest, like the goblet squat";
+  if (w === 15 || w === 20) return "the " + w + " lb kettlebell at your chest";
+  if (w === 22) return "one 10 kg kettlebell at your chest";
+  if (w === 24) return short ? "12 lb in each hand" : "the fixed 12 lb dumbbells, one in each hand";
+  if (w > 0 && w % 10 === 0) return short ? (w/2) + " lb in each hand" : "dumbbells set to " + (w/2) + ", one in each hand";
+  return "";
+}
 /* Plain words for what to pick up, e.g. "one 15 lb kettlebell or dumbbell". */
 function loadHint(ex, w){
   const k = LOAD_KIND[ex.id];
   if (!k || w == null) return "";
+  if (k === "lunge") return lungeHint(w, false);
   const db = GEAR.dumbbells.indexOf(w) >= 0, kb = GEAR.kettlebells.indexOf(w) >= 0;
   const bell = function(x){ return x === 22 ? "10 kg kettlebell" : x + " lb kettlebell"; };
   const one = function(){
@@ -710,11 +724,13 @@ function loadHint(ex, w){
 
 /* Bumped on every publish, and shown at the foot of Settings, so it is possible to tell from
    the phone which build is actually running. */
-const BUILD = "mom-2026-11-07a";
+const BUILD = "mom-2026-11-07b";
 /* Bumped whenever the coaching rules change. On first open after a bump, every lift is rebuilt
    from her saved history so the new rules apply to her next workout straight away.
-   2 = second "Hold" in a row moves her up; weights follow the GEAR list. */
-const COACH_V = 2;
+   2 = second "Hold" in a row moves her up; weights follow the GEAR list.
+   3 = lunges by total weight with chest-hold steps; presses build to 12 reps before 20 lb;
+       messages say "this time". */
+const COACH_V = 3;
 
 /* Dates follow the clock on her phone. toISOString() is UTC, which put evening workouts on
    tomorrow. */
@@ -885,7 +901,7 @@ function weightStep(ex){ return isPerSide(ex) ? sideStep(ex) : (ex.inc || 5); }
 /* What the weight box is asking for. */
 function weightCaption(ex){
   if (equipFor(ex) === "dumbbell") return "Per dumbbell (lb)";
-  return isPerSide(ex) ? "Per side (lb)" : "Weight (lb)";
+  return isPerSide(ex) ? "Per side (lb)" : "Total weight";
 }
 
 /* "95 lb", or "50 lb in each hand" where that would otherwise be ambiguous. */
@@ -898,6 +914,7 @@ function weightLabel(ex, weight, band, equip, hands){
   if (eq === "dumbbell") {
     return weight + " lb " + (hd === "one" ? "in one hand" : "in each hand");
   }
+  if (LOAD_KIND[ex.id] === "lunge" && lungeHint(weight, true)) return weight + " lb (" + lungeHint(weight, true) + ")";
   return weight + " lb";
 }
 /* The line under the weight box. Spells the bar sum out, or confirms the dumbbell wording. */
@@ -909,7 +926,12 @@ function totalLine(ex, val){
     if (blank) return "The whole weight of one dumbbell.";
     return v + " lb " + (handsFor(ex) === "one" ? "in one hand" : "in each hand");
   }
-  if (!isPerSide(ex)) return "";
+  if (!isPerSide(ex)) {
+    // Spell out what to pick up (or which plates), so "Total weight" is never a guess.
+    const hint = blank ? "" : loadHint(ex, v);
+    if (LOAD_KIND[ex.id] === "cable") return blank ? "All the plates on the machine, added up." : (hint ? v + " lb = " + hint.replace("plates: ", "") : "");
+    return hint ? hint.charAt(0).toUpperCase() + hint.slice(1) + "." : "";
+  }
   if (blank) return "Enter the weight on one side.";
   return totalFrom(ex, v) + " lb = " + baseWeight(ex) + " bar + " + v + " a side";
 }
@@ -985,6 +1007,7 @@ function firstTarget(ex){
 
 /* Given a finished entry, work out what to do next time. */
 function progress(ex, entry, prev){
+  entry = normEntry(ex, entry);
   const reps = entry.sets.map(s => s.reps).filter(r => r != null);
   const rpes = entry.sets.map(s => s.rpe).filter(Boolean);
   // Every set has its own weight. Coaching goes by the heaviest one she used.
@@ -995,19 +1018,30 @@ function progress(ex, entry, prev){
   const planned = entry.sets.slice(0, ex.sets);
   const judged = reps.slice(0, ex.sets);
   const jRpes  = planned.map(s => s.rpe).filter(Boolean);
+  // Rep range for this weight. After a big jump (see `stretch`) the floor drops to 6 while she
+  // stays at the new weight, so 6 or 7 reps counts as on track, not as falling short.
+  const lowFor = (prev && prev.lowFor && prev.lowFor.w === w) ? prev.lowFor.low : null;
+  const lo = lowFor != null ? lowFor : ex.repLow;
+  // When the next weight she owns is a big jump (more than 25% heavier), moves with `stretch`
+  // build to that many reps first, e.g. presses: 12 reps at 15 lb before 20 lb.
+  const upNext = w ? nextLoad(ex, w) : null;
+  const bigJump = !!(ex.stretch && w && upNext != null && upNext > w * 1.25 + 0.01);
+  const hi = bigJump ? ex.stretch : ex.repHigh;
   // A set done lighter than the top weight still counts as reaching the range, but it can never
   // earn a weight increase: the top of the range has to be hit at the top weight.
   const atTop  = planned.map(s => { const sw = setW(s, entry); return w == null || sw == null || sw >= w; });
-  const hitTop = judged.length >= ex.sets && judged.every((r, i) => r >= ex.repHigh && atTop[i]);
-  const hitLow = judged.length > 0 && judged.every(r => r >= ex.repLow);
+  const hitTop = judged.length >= ex.sets && judged.every((r, i) => r >= hi && atTop[i]);
+  const hitLow = judged.length > 0 && judged.every(r => r >= lo);
   const avgRpe = jRpes.length ? jRpes.reduce((a,b)=>a+b,0) / jRpes.length : null;
   let stalls = (prev && prev.stalls) || 0;
   let next;
-  // "Stay here one more session" is said once per weight. Once she has already reached the top of
+  let newLow = lowFor != null ? { w:w, low:lowFor } : null;
+  // "Stay at this weight" is said once per weight. Once she has already reached the top of
   // the range at this same weight (and band), reaching it again moves her up, however hard it felt.
   // If she was told to go up but stayed put, it keeps telling her to go up rather than holding again.
   const topKey = String(w) + "|" + (entry.band || (prev && prev.band) || "");
   const heldBefore = !!(prev && prev.topAt === topKey);
+  // Every message below is read at the START of her next workout, so it talks about "this time".
 
   if (!hitLow) {
     stalls += 1;
@@ -1020,55 +1054,70 @@ function progress(ex, entry, prev){
             : "Two rough sessions. Drop to a lighter band for a couple of weeks, then work back up." };
       } else if (w) {
         const d = deloadTo(w, inc, ex);
+        newLow = null;
         next = { weight:d, reps:ex.repLow, tone:"warn", chip:"Deload",
-          msg:"Two stalled sessions. Drop to " + d + " lb" + hintTail(ex, d) + " and build back up from " + ex.repLow + " reps." };
+          msg:"Two stalled sessions. This time drop to " + d + " lb" + hintTail(ex, d) +
+              " and build back up from " + ex.repLow + " reps." };
       } else {
         next = { weight:null, reps:ex.repLow, tone:"warn", chip:"Ease off",
           msg:"Two stalled sessions. Cut a set or slow it down for a couple of weeks." };
       }
     } else {
-      next = { weight:w, reps:ex.repLow, tone:"hold", chip:"Repeat",
-        msg:"You came up short of " + ex.repLow + ". Same weight again, get all " + ex.sets + " sets to " + ex.repLow + "." };
+      next = { weight:w, reps:lo, tone:"hold", chip:"Repeat",
+        msg:"Last time you came up short of " + lo + ". Same weight this time. Get all " + ex.sets +
+            " sets to " + lo + "." };
     }
   } else if (hitTop && avgRpe != null && avgRpe >= 9 && !heldBefore) {
     stalls = 0;
-    next = { weight:w, reps:ex.repHigh, tone:"hold", chip:"Hold",
-      msg:"You hit the top of the range but rated it " + (Math.round(avgRpe*10)/10) +
-          ". Stay here one more session. Hit the top again and you move up, even if it feels hard." };
+    next = { weight:w, reps:hi, tone:"hold", chip:"Hold",
+      msg:"Last time you hit the top of the range but rated it " + (Math.round(avgRpe*10)/10) +
+          ". Stay at the same weight this time. Hit the top again and you move up, even if it feels hard." };
   } else if (hitTop) {
     stalls = 0;
-    const up = w ? nextLoad(ex, w) : null;
+    const up = upNext;
     const lead = heldBefore ? "Top of the range again at this weight. Time to move up. " : "";
     if (ex.banded) {
       next = ex.assistBand
         ? { weight:null, reps:ex.repHigh, tone:"good", chip:"Lighter band",
-            msg:"Clean sweep. Next time switch to a lighter band than last time." }
+            msg:"Clean sweep last time. This time switch to a lighter band." }
         : { weight:null, reps:ex.repLow, tone:"good", chip:"Stronger band",
-            msg:"Clean sweep. Next time use a stronger band and start again at " + ex.repLow + " reps." };
+            msg:"Clean sweep last time. This time use a stronger band and start again at " + ex.repLow + " reps." };
     } else if (w && up == null) {
-      next = { weight:w, reps:ex.repHigh, tone:"good", chip:"Heaviest you have",
-        msg:lead + "All " + ex.sets + " sets at " + ex.repHigh + " with the heaviest weight you have. " +
-            "Stay at " + w + " lb and lower each rep slowly. Time for heavier weights." };
+      next = { weight:w, reps:hi, tone:"good", chip:"Heaviest you have",
+        msg:lead + "All " + ex.sets + " sets at " + hi + " with the heaviest weight you have. " +
+            "Stay at " + w + " lb this time and lower each rep slowly. Time for heavier weights." };
+    } else if (w && bigJump) {
+      newLow = { w:up, low:6 };
+      next = { weight:up, reps:6, tone:"good", chip:"Add " + (Math.round((up - w) * 100) / 100) + " lb",
+        msg:lead + "All " + ex.sets + " sets at " + hi + ". Go to " + up + " lb" + hintTail(ex, up) +
+            ". It's a big jump, so aim for 6 to 8 reps per set. Fewer reps than before is normal." };
     } else if (w) {
+      newLow = null;
       const step = Math.round((up - w) * 100) / 100;
       next = { weight:up, reps:ex.repLow, tone:"good", chip:"Add " + step + " lb",
-        msg:lead + "All " + ex.sets + " sets at " + ex.repHigh + ". Go to " + up + " lb" + hintTail(ex, up) +
-            " and start again at " + ex.repLow + " reps." };
+        msg: (ex.id === "reverse_lunge" && up === 12)
+          ? "Moving up. Skip the two small dumbbells this time. Hold one 12 lb dumbbell upright at your " +
+            "chest with both hands, like your goblet squat. Start again at " + ex.repLow + " reps per leg."
+          : lead + "All " + ex.sets + " sets at " + hi + " last time. This time go to " + up + " lb" +
+            hintTail(ex, up) + " and start again at " + ex.repLow + " reps." };
     } else {
       next = { weight:null, reps:ex.repHigh, tone:"good", chip:"Add load",
-        msg:"Top of the range on every set. Hold a light plate next time, or slow the lowering right down." };
+        msg:"Top of the range on every set last time. This time hold a light weight, or slow the lowering right down." };
     }
-  } else if (judged.length >= ex.sets && judged.every(r => r >= ex.repHigh)) {
+  } else if (judged.length >= ex.sets && judged.every(r => r >= hi)) {
     // Every rep target was hit, but some sets were done lighter than the top weight.
     stalls = 0;
-    next = { weight:w, reps:ex.repHigh, tone:"hold", chip:"Stay at " + w + " lb",
-      msg:"Every set reached " + ex.repHigh + ", but not all at " + w + " lb. Do all " + ex.sets +
+    next = { weight:w, reps:hi, tone:"hold", chip:"Stay at " + w + " lb",
+      msg:"Every set reached " + hi + ", but not all at " + w + " lb. This time do all " + ex.sets +
           " sets at " + w + " before the weight goes up." };
   } else {
     stalls = 0;
-    const aim = Math.min(ex.repHigh, Math.min.apply(null, judged) + 1);
-    next = { weight:w, reps:aim, tone:"hold", chip:"Add a rep",
-      msg:"Same weight. Aim for " + aim + " on every set before the weight goes up." };
+    const aim = Math.min(hi, Math.min.apply(null, judged) + 1);
+    let msg = "Same weight. Aim for " + aim + " on every set this time.";
+    if (bigJump && aim > ex.repHigh)
+      msg = aim < hi ? "Same weight. Time to go up to " + aim + " or " + hi + " reps per set this time."
+                     : "Same weight. Time to go up to " + hi + " reps per set this time.";
+    next = { weight:w, reps:aim, tone:"hold", chip:"Add a rep", msg:msg };
   }
 
   if (ex.noBand || (ex.bwOk && !w)) next = bodyCoach(ex, next, judged, hitTop);
@@ -1086,9 +1135,21 @@ function progress(ex, entry, prev){
     date: entry.date,
     stalls: stalls,
     topAt: hitTop ? topKey : null,
+    lowFor: newLow,
     next: next,
     history: hist
   };
+}
+
+/* Lunges used to be logged per dumbbell (5 = a 5 lb dumbbell in each hand). Since 2026-11-07 they
+   are logged as the total weight held, so old per-dumbbell entries are doubled when coaching. */
+function normEntry(ex, entry){
+  if (!ex || ex.id !== "reverse_lunge" || entry.equip !== "dumbbell" || entry.hands === "one") return entry;
+  const dbl = function(v){ return v == null ? v : v * 2; };
+  return Object.assign({}, entry, {
+    weight: dbl(entry.weight),
+    sets: (entry.sets || []).map(function(s){ return Object.assign({}, s, { weight: dbl(s.weight) }); })
+  });
 }
 
 /* Rewords a coaching call for a move with no weight: bodyweight reps or a timed hold. */
@@ -1096,16 +1157,18 @@ function bodyCoach(ex, next, judged, hitTop){
   const unit = ex.timed ? " seconds" : "";
   const n = Object.assign({}, next, { weight:null });
   if (n.chip === "Repeat")
-    n.msg = "You came up short of " + ex.repLow + unit + ". Aim for all " + ex.sets + " sets at " + ex.repLow + unit + " next time.";
+    n.msg = "Last time you came up short of " + ex.repLow + unit + ". This time aim for all " + ex.sets +
+            " sets at " + ex.repLow + unit + ".";
   else if (n.chip === "Ease off")
     n.msg = "Two tough sessions in a row. Do fewer, slower, good-form reps for a couple of weeks.";
   else if (n.chip === "Add a rep")
-    n.msg = "Aim for " + n.reps + unit + " on every set next time.";
+    n.msg = "Aim for " + n.reps + unit + " on every set this time.";
   else if (n.chip === "Hold")
-    n.msg = "You hit the top of the range but it felt very hard. Stay here one more session. Do it again and you move up.";
+    n.msg = "Last time you hit the top of the range but it felt very hard. Stay at the same level this time. " +
+            "Hit the top again and you move up.";
   else if (hitTop)
     Object.assign(n, ex.bwNext || { chip:"Add a challenge",
-      msg:"Top of the range on every set. Next time slow each rep right down." });
+      msg:"Top of the range on every set last time. This time slow each rep right down." });
   return n;
 }
 
