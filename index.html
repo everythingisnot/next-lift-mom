@@ -8,81 +8,224 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Next Lift">
-<meta name="theme-color" content="#FDE5B4">
+<meta name="theme-color" content="#FAEEF0">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-180.png">
 <title>Next Lift</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&family=Public+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 
 <style>
 :root{
-  /* Pink & peach palette: cream page, warm white cards, pink buttons. */
-  --ground:#FDE5B4;        /* cream */
-  --surface:#FFFDF8;
-  --surface-2:#FFEEDD;     /* pale peach, for boxes inside cards */
-  --line:#F5C9A2;          /* peach, a shade under FFCBA5 so edges show */
-  --line-soft:#FADDC2;
-  --ink:#2B1A14;
-  --ink-2:#6E4F43;
-  --ink-3:#98776A;
-  --accent:#FF9899;        /* pink: buttons and highlights */
-  --accent-soft:#FFCBC4;   /* blush: selected and tinted states */
-  --accent-ink:#3D0F12;    /* text sitting on a pink fill */
-  --accent-text:#B3343E;   /* rose, dark enough to read as text on the cards */
-  --accent-big:#E0707A;    /* softer pink for the big day letter; big text only needs 3:1 */
-  --good:#1B6F4C;   --good-bg:#DFEFE7;
-  --hold:#8A5F10;   --hold-bg:#F6EDDA;
-  --warn:#9C3826;   --warn-bg:#F7E3DE;
-  --shadow:0 1px 2px rgba(21,24,28,.06), 0 6px 18px rgba(21,24,28,.06);
-  --scrim:rgba(253,229,180,.86);
-  --r:16px;
-  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
-  --f-body:"Public Sans","Helvetica Neue",Arial,sans-serif;
-  --f-num:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  /* Glass look: lavender and pink wash, frosted see-through cards, violet-to-pink buttons. */
+  --ground:#FAEEF0;
+  --surface:rgba(255,255,255,.46);      /* frosted card */
+  --surface-2:rgba(255,255,255,.55);    /* boxes inside cards */
+  --field:rgba(255,255,255,.66);        /* inputs and steppers */
+  --field-2:rgba(244,145,164,.12);      /* the - and + ends of steppers */
+  --glass-edge:rgba(255,255,255,.88);   /* the bright rim on glass */
+  --line:rgba(185,101,117,.20);
+  --line-soft:rgba(185,101,117,.12);
+  --ink:#3B2025;
+  --ink-2:#714E55;
+  --ink-3:#8E6C73;
+  --accent:#EE647E;                     /* violet */
+  --grad:linear-gradient(135deg,#F991A5 0%,#EE647E 48%,#E2827F 100%);
+  --accent-soft:rgba(244,145,164,.22);
+  --accent-ink:#FFFFFF;                 /* text on the gradient */
+  --accent-text:#CE435D;
+  --accent-big:#EE647E;
+  /* coaching colours, now from the same family: blue = go up, peach = hold, pink = ease off */
+  --good:#0B7A72;   --good-bg:rgba(20,184,166,.18);
+  --hold:#A4501C;   --hold-bg:rgba(251,165,110,.24);
+  --warn:#B73E36;   --warn-bg:rgba(234,123,117,.18);
+  --shadow:0 10px 30px rgba(175,85,102,.13), inset 0 1px 0 rgba(255,255,255,.75);
+  --glow:0 8px 22px rgba(238,100,126,.34);
+  --scrim:rgba(254,243,245,.55);
+  --scrim-strong:rgba(255,247,249,.74);
+  --blobs:
+    radial-gradient(42% 32% at 8% 6%, rgba(251,174,189,.85), transparent 70%),
+    radial-gradient(46% 36% at 98% 18%, rgba(252,192,189,.80), transparent 70%),
+    radial-gradient(52% 38% at 88% 86%, rgba(255,204,182,.75), transparent 70%),
+    radial-gradient(46% 38% at 4% 72%, rgba(255,214,192,.70), transparent 70%),
+    linear-gradient(160deg,#FEEFF1 0%,#FAF0F0 50%,#FFF3EE 100%);
+  --r:24px;
+  --r2:16px;
+  --f-display:"Plus Jakarta Sans","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Plus Jakarta Sans","Helvetica Neue",Arial,sans-serif;
+  --f-num:"Plus Jakarta Sans","Helvetica Neue",Arial,sans-serif;
+
+  /* 3D: lit top edge, shadow underneath, raised buttons, sunken fields, glass bubbles */
+  --sheen:linear-gradient(180deg,rgba(255,255,255,.60) 0%,rgba(255,255,255,.14) 34%,rgba(255,255,255,0) 58%);
+  --rim:rgba(255,255,255,.98) rgba(255,255,255,.72) rgba(216,144,158,.38) rgba(255,255,255,.72);
+  --lift:inset 0 1px 0 rgba(255,255,255,.95), inset 0 -2px 0 rgba(195,115,129,.10), 0 26px 50px -18px rgba(164,66,84,.34), 0 8px 16px -6px rgba(164,66,84,.14);
+  --btn-face:linear-gradient(180deg,rgba(255,255,255,.96) 0%,rgba(255,255,255,.62) 100%);
+  --btn-lift:inset 0 1px 0 #FFFFFF, inset 0 -2px 0 rgba(195,115,129,.12), 0 8px 16px -6px rgba(164,66,84,.28);
+  --well:inset 0 2px 6px rgba(164,66,84,.16), inset 0 -1px 0 rgba(255,255,255,.85);
+  --glow:inset 0 1px 0 rgba(255,255,255,.6), inset 0 -4px 10px rgba(144,27,47,.28), 0 16px 30px -10px rgba(238,100,126,.65), 0 4px 10px rgba(226,130,127,.25);
+  --orbs:
+    radial-gradient(circle 10px at calc(88% - 12px) calc(10% - 12px), rgba(255,255,255,.95), transparent),
+    radial-gradient(circle 38px at 88% 10%, rgba(255,255,255,.10) 0%, rgba(251,184,197,.32) 72%, rgba(255,255,255,.9) 92%, transparent 100%),
+    radial-gradient(circle 7px at calc(5% - 8px) calc(40% - 8px), rgba(255,255,255,.95), transparent),
+    radial-gradient(circle 26px at 5% 40%, rgba(255,255,255,.10) 0%, rgba(252,196,193,.34) 72%, rgba(255,255,255,.9) 92%, transparent 100%),
+    radial-gradient(circle 14px at calc(95% - 18px) calc(64% - 18px), rgba(255,255,255,.95), transparent),
+    radial-gradient(circle 54px at 95% 64%, rgba(255,255,255,.08) 0%, rgba(255,203,180,.32) 74%, rgba(255,255,255,.85) 93%, transparent 100%),
+    radial-gradient(circle 9px at calc(10% - 10px) calc(92% - 10px), rgba(255,255,255,.95), transparent),
+    radial-gradient(circle 32px at 10% 92%, rgba(255,255,255,.10) 0%, rgba(251,189,200,.32) 72%, rgba(255,255,255,.9) 92%, transparent 100%);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --accent-big:#FFA7A6;
-    --ground:#101317;
-    --surface:#191D23;
-    --surface-2:#212730;
-    --line:#2F3742;
-    --line-soft:#252C35;
-    --ink:#EBEEF2;
-    --ink-2:#98A3B0;
-    --ink-3:#77828F;
-    --accent:#FF9899;
-    --accent-soft:#3A2224;
-    --accent-ink:#2A0A0C;
-    --accent-text:#FFA7A6;
-    --good:#63CE9D;  --good-bg:#143026;
-    --hold:#DDB162;  --hold-bg:#312716;
-    --warn:#EE8B74;  --warn-bg:#38201B;
-    --shadow:0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.28);
-  --scrim:rgba(16,19,23,.82);
+    --ground:#251014;
+    --surface:rgba(80,38,47,.50);
+    --surface-2:rgba(255,255,255,.06);
+    --field:rgba(255,255,255,.07);
+    --field-2:rgba(244,145,164,.14);
+    --glass-edge:rgba(255,255,255,.14);
+    --line:rgba(255,255,255,.13);
+    --line-soft:rgba(255,255,255,.08);
+    --ink:#FBEFF1;
+    --ink-2:#D8B6BD;
+    --ink-3:#B58D95;
+    --accent:#F491A4;
+    --accent-soft:rgba(244,145,164,.22);
+    --accent-ink:#FFFFFF;
+    --accent-text:#FBBCC8;
+    --accent-big:#FBB4C2;
+    --good:#7FE3D6;   --good-bg:rgba(20,184,166,.20);
+    --hold:#FFC08F;   --hold-bg:rgba(251,146,60,.18);
+    --warn:#FAA09A;   --warn-bg:rgba(228,88,80,.20);
+    --shadow:0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.07);
+    --glow:0 8px 22px rgba(238,100,126,.40);
+    --scrim:rgba(37,16,20,.55);
+    --scrim-strong:rgba(54,26,32,.80);
+  --sheen:linear-gradient(180deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,.03) 36%,rgba(255,255,255,0) 58%);
+  --rim:rgba(255,255,255,.24) rgba(255,255,255,.11) rgba(0,0,0,.30) rgba(255,255,255,.11);
+  --lift:inset 0 1px 0 rgba(255,255,255,.12), inset 0 -2px 0 rgba(0,0,0,.18), 0 26px 50px -18px rgba(0,0,0,.70), 0 8px 16px -6px rgba(0,0,0,.35);
+  --btn-face:linear-gradient(180deg,rgba(255,255,255,.14) 0%,rgba(255,255,255,.04) 100%);
+  --btn-lift:inset 0 1px 0 rgba(255,255,255,.16), inset 0 -2px 0 rgba(0,0,0,.25), 0 8px 16px -6px rgba(0,0,0,.55);
+  --well:inset 0 2px 6px rgba(0,0,0,.40), inset 0 -1px 0 rgba(255,255,255,.06);
+  --glow:inset 0 1px 0 rgba(255,255,255,.45), inset 0 -4px 10px rgba(96,15,29,.40), 0 16px 30px -10px rgba(238,100,126,.70), 0 4px 10px rgba(226,130,127,.25);
+  --orbs:
+    radial-gradient(circle 10px at calc(88% - 12px) calc(10% - 12px), rgba(255,255,255,.45), transparent),
+    radial-gradient(circle 38px at 88% 10%, rgba(255,255,255,.03) 0%, rgba(248,117,143,.22) 72%, rgba(255,255,255,.35) 92%, transparent 100%),
+    radial-gradient(circle 7px at calc(5% - 8px) calc(40% - 8px), rgba(255,255,255,.45), transparent),
+    radial-gradient(circle 26px at 5% 40%, rgba(255,255,255,.03) 0%, rgba(234,121,117,.22) 72%, rgba(255,255,255,.35) 92%, transparent 100%),
+    radial-gradient(circle 14px at calc(95% - 18px) calc(64% - 18px), rgba(255,255,255,.45), transparent),
+    radial-gradient(circle 54px at 95% 64%, rgba(255,255,255,.03) 0%, rgba(255,154,110,.22) 74%, rgba(255,255,255,.30) 93%, transparent 100%),
+    radial-gradient(circle 9px at calc(10% - 10px) calc(92% - 10px), rgba(255,255,255,.45), transparent),
+    radial-gradient(circle 32px at 10% 92%, rgba(255,255,255,.03) 0%, rgba(248,127,150,.22) 72%, rgba(255,255,255,.35) 92%, transparent 100%);
+
+    --blobs:
+      radial-gradient(42% 32% at 8% 6%, rgba(222,88,114,.45), transparent 70%),
+      radial-gradient(46% 36% at 98% 18%, rgba(213,91,87,.32), transparent 70%),
+      radial-gradient(52% 38% at 88% 86%, rgba(230,118,70,.35), transparent 70%),
+      radial-gradient(46% 38% at 4% 72%, rgba(250,140,110,.16), transparent 70%),
+      linear-gradient(160deg,#2A1217 0%,#2E1217 50%,#28170F 100%);
   }
 }
 :root[data-theme="dark"]{
-  --accent-big:#FFA7A6;
-  --ground:#101317;
-  --surface:#191D23;
-  --surface-2:#212730;
-  --line:#2F3742;
-  --line-soft:#252C35;
-  --ink:#EBEEF2;
-  --ink-2:#98A3B0;
-  --ink-3:#77828F;
-  --accent:#FF9899;
-  --accent-soft:#3A2224;
-  --accent-ink:#2A0A0C;
-  --accent-text:#FFA7A6;
-  --good:#63CE9D;  --good-bg:#143026;
-  --hold:#DDB162;  --hold-bg:#312716;
-  --warn:#EE8B74;  --warn-bg:#38201B;
-  --shadow:0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.28);
-  --scrim:rgba(16,19,23,.82);
+  --ground:#251014;
+  --surface:rgba(80,38,47,.50);
+  --surface-2:rgba(255,255,255,.06);
+  --field:rgba(255,255,255,.07);
+  --field-2:rgba(244,145,164,.14);
+  --glass-edge:rgba(255,255,255,.14);
+  --line:rgba(255,255,255,.13);
+  --line-soft:rgba(255,255,255,.08);
+  --ink:#FBEFF1;
+  --ink-2:#D8B6BD;
+  --ink-3:#B58D95;
+  --accent:#F491A4;
+  --accent-soft:rgba(244,145,164,.22);
+  --accent-ink:#FFFFFF;
+  --accent-text:#FBBCC8;
+  --accent-big:#FBB4C2;
+  --good:#7FE3D6;   --good-bg:rgba(20,184,166,.20);
+  --hold:#FFC08F;   --hold-bg:rgba(251,146,60,.18);
+  --warn:#FAA09A;   --warn-bg:rgba(228,88,80,.20);
+  --shadow:0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.07);
+  --glow:0 8px 22px rgba(238,100,126,.40);
+  --scrim:rgba(37,16,20,.55);
+  --scrim-strong:rgba(54,26,32,.80);
+  --sheen:linear-gradient(180deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,.03) 36%,rgba(255,255,255,0) 58%);
+  --rim:rgba(255,255,255,.24) rgba(255,255,255,.11) rgba(0,0,0,.30) rgba(255,255,255,.11);
+  --lift:inset 0 1px 0 rgba(255,255,255,.12), inset 0 -2px 0 rgba(0,0,0,.18), 0 26px 50px -18px rgba(0,0,0,.70), 0 8px 16px -6px rgba(0,0,0,.35);
+  --btn-face:linear-gradient(180deg,rgba(255,255,255,.14) 0%,rgba(255,255,255,.04) 100%);
+  --btn-lift:inset 0 1px 0 rgba(255,255,255,.16), inset 0 -2px 0 rgba(0,0,0,.25), 0 8px 16px -6px rgba(0,0,0,.55);
+  --well:inset 0 2px 6px rgba(0,0,0,.40), inset 0 -1px 0 rgba(255,255,255,.06);
+  --glow:inset 0 1px 0 rgba(255,255,255,.45), inset 0 -4px 10px rgba(96,15,29,.40), 0 16px 30px -10px rgba(238,100,126,.70), 0 4px 10px rgba(226,130,127,.25);
+  --orbs:
+    radial-gradient(circle 10px at calc(88% - 12px) calc(10% - 12px), rgba(255,255,255,.45), transparent),
+    radial-gradient(circle 38px at 88% 10%, rgba(255,255,255,.03) 0%, rgba(248,117,143,.22) 72%, rgba(255,255,255,.35) 92%, transparent 100%),
+    radial-gradient(circle 7px at calc(5% - 8px) calc(40% - 8px), rgba(255,255,255,.45), transparent),
+    radial-gradient(circle 26px at 5% 40%, rgba(255,255,255,.03) 0%, rgba(234,121,117,.22) 72%, rgba(255,255,255,.35) 92%, transparent 100%),
+    radial-gradient(circle 14px at calc(95% - 18px) calc(64% - 18px), rgba(255,255,255,.45), transparent),
+    radial-gradient(circle 54px at 95% 64%, rgba(255,255,255,.03) 0%, rgba(255,154,110,.22) 74%, rgba(255,255,255,.30) 93%, transparent 100%),
+    radial-gradient(circle 9px at calc(10% - 10px) calc(92% - 10px), rgba(255,255,255,.45), transparent),
+    radial-gradient(circle 32px at 10% 92%, rgba(255,255,255,.03) 0%, rgba(248,127,150,.22) 72%, rgba(255,255,255,.35) 92%, transparent 100%);
+
+  --blobs:
+    radial-gradient(42% 32% at 8% 6%, rgba(222,88,114,.45), transparent 70%),
+    radial-gradient(46% 36% at 98% 18%, rgba(213,91,87,.32), transparent 70%),
+    radial-gradient(52% 38% at 88% 86%, rgba(230,118,70,.35), transparent 70%),
+    radial-gradient(46% 38% at 4% 72%, rgba(250,140,110,.16), transparent 70%),
+    linear-gradient(160deg,#2A1217 0%,#2E1217 50%,#28170F 100%);
+}
+
+/* ---------- round 3: thick glass, glare, cubes ---------- */
+:root{
+  --slab:0 2px 0 rgba(252,233,236,.95), 0 4px 0 rgba(248,216,222,.92), 0 6px 0 rgba(242,197,205,.85), 0 7px 2px rgba(216,139,154,.45);
+  --glare:linear-gradient(115deg, transparent 0 22%, rgba(255,255,255,.40) 30%, transparent 40%), radial-gradient(60% 40% at 8% 0%, rgba(255,255,255,.70), transparent 60%);
+  --card-face:linear-gradient(160deg, rgba(255,255,255,.62) 0%, rgba(255,255,255,.32) 100%);
+  --tint-1:rgba(250,151,169,.20); --tint-2:rgba(250,160,155,.18); --tint-3:rgba(255,175,140,.20);
+  --btn-slab:0 3px 0 rgba(238,193,201,.95), 0 4px 2px rgba(206,129,144,.35);
+  --grad-slab:0 4px 0 #C9465F, 0 5px 2px rgba(154,37,57,.45);
+  --cube-face:linear-gradient(145deg, rgba(255,255,255,.80), rgba(253,210,218,.28) 60%, rgba(252,200,198,.40));
+  --cube-edge:rgba(255,255,255,.92);
+  --cube-shadow:inset 0 2px 0 rgba(255,255,255,.85), inset -6px -8px 16px rgba(215,125,142,.20), 0 6px 0 rgba(246,202,210,.75), 0 18px 30px -10px rgba(164,66,84,.38);
+  --blobs:
+    radial-gradient(44% 34% at 8% 6%, rgba(250,155,173,.95), transparent 70%),
+    radial-gradient(48% 38% at 98% 18%, rgba(250,164,160,.90), transparent 70%),
+    radial-gradient(54% 40% at 88% 86%, rgba(255,182,150,.90), transparent 70%),
+    radial-gradient(48% 40% at 4% 72%, rgba(255,195,160,.85), transparent 70%),
+    linear-gradient(160deg,#FEE8EC 0%,#FAEAEA 50%,#FFEFE8 100%);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --slab:0 2px 0 rgba(127,67,79,.92), 0 4px 0 rgba(102,51,61,.92), 0 6px 0 rgba(78,36,45,.92), 0 7px 2px rgba(0,0,0,.5);
+    --glare:linear-gradient(115deg, transparent 0 22%, rgba(255,255,255,.07) 30%, transparent 40%), radial-gradient(60% 40% at 8% 0%, rgba(255,255,255,.13), transparent 60%);
+    --card-face:linear-gradient(160deg, rgba(121,61,74,.58) 0%, rgba(70,32,40,.42) 100%);
+    --tint-1:rgba(247,108,134,.12); --tint-2:rgba(232,103,98,.10); --tint-3:rgba(255,140,90,.12);
+    --btn-slab:0 3px 0 rgba(39,15,20,.9), 0 4px 2px rgba(0,0,0,.4);
+    --grad-slab:0 4px 0 #B1364D, 0 5px 2px rgba(0,0,0,.5);
+    --cube-face:linear-gradient(145deg, rgba(255,255,255,.20), rgba(248,117,143,.08) 60%, rgba(234,121,117,.14));
+    --cube-edge:rgba(255,255,255,.24);
+    --cube-shadow:inset 0 2px 0 rgba(255,255,255,.18), inset -6px -8px 16px rgba(0,0,0,.25), 0 6px 0 rgba(107,48,60,.8), 0 18px 30px -10px rgba(0,0,0,.6);
+    --blobs:
+      radial-gradient(44% 34% at 8% 6%, rgba(232,93,120,.55), transparent 70%),
+      radial-gradient(48% 38% at 98% 18%, rgba(222,92,88,.40), transparent 70%),
+      radial-gradient(54% 40% at 88% 86%, rgba(240,121,70,.45), transparent 70%),
+      radial-gradient(48% 40% at 4% 72%, rgba(250,140,110,.20), transparent 70%),
+      linear-gradient(160deg,#2A1217 0%,#2E1217 50%,#28170F 100%);
+  }
+}
+:root[data-theme="dark"]{
+  --slab:0 2px 0 rgba(127,67,79,.92), 0 4px 0 rgba(102,51,61,.92), 0 6px 0 rgba(78,36,45,.92), 0 7px 2px rgba(0,0,0,.5);
+  --glare:linear-gradient(115deg, transparent 0 22%, rgba(255,255,255,.07) 30%, transparent 40%), radial-gradient(60% 40% at 8% 0%, rgba(255,255,255,.13), transparent 60%);
+  --card-face:linear-gradient(160deg, rgba(121,61,74,.58) 0%, rgba(70,32,40,.42) 100%);
+  --tint-1:rgba(247,108,134,.12); --tint-2:rgba(232,103,98,.10); --tint-3:rgba(255,140,90,.12);
+  --btn-slab:0 3px 0 rgba(39,15,20,.9), 0 4px 2px rgba(0,0,0,.4);
+  --grad-slab:0 4px 0 #B1364D, 0 5px 2px rgba(0,0,0,.5);
+  --cube-face:linear-gradient(145deg, rgba(255,255,255,.20), rgba(248,117,143,.08) 60%, rgba(234,121,117,.14));
+  --cube-edge:rgba(255,255,255,.24);
+  --cube-shadow:inset 0 2px 0 rgba(255,255,255,.18), inset -6px -8px 16px rgba(0,0,0,.25), 0 6px 0 rgba(107,48,60,.8), 0 18px 30px -10px rgba(0,0,0,.6);
+  --blobs:
+    radial-gradient(44% 34% at 8% 6%, rgba(232,93,120,.55), transparent 70%),
+    radial-gradient(48% 38% at 98% 18%, rgba(222,92,88,.40), transparent 70%),
+    radial-gradient(54% 40% at 88% 86%, rgba(240,121,70,.45), transparent 70%),
+    radial-gradient(48% 40% at 4% 72%, rgba(250,140,110,.20), transparent 70%),
+    linear-gradient(160deg,#2A1217 0%,#2E1217 50%,#28170F 100%);
 }
 
 *{box-sizing:border-box}
@@ -143,19 +286,19 @@ input,textarea{font:inherit;color:inherit}
 .rot b{
   font-family:var(--f-display);font-weight:700;font-size:13px;
   width:27px;height:28px;flex:none;display:grid;place-items:center;
-  border:1px solid var(--line);border-radius:8px;
+  border:1px solid var(--line);border-radius:10px;
   color:var(--ink-3);background:var(--surface);
 }
 .rot b.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .rot b.past{color:var(--ink-2);background:var(--surface-2)}
 .iconbtn{
-  width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:12px;
+  width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:var(--r2);
   border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-size:20px;
 }
 .iconbtn:active{background:var(--surface-2)}
 /* labelled version of the same button, used for History */
 .textbtn{
-  height:46px;flex:none;display:flex;align-items:center;padding:0 14px;border-radius:12px;
+  height:46px;flex:none;display:flex;align-items:center;padding:0 14px;border-radius:var(--r2);
   border:1px solid var(--line);background:var(--surface);color:var(--ink-2);
   font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap;
 }
@@ -180,7 +323,7 @@ input,textarea{font:inherit;color:inherit}
 .hero-variant{display:block;color:var(--ink-2);font-size:16px;margin-top:5px;line-height:1.3}
 .warmup{
   margin-top:14px;padding:12px 14px;background:var(--surface-2);
-  border-radius:12px;font-size:15px;color:var(--ink-2);
+  border-radius:var(--r2);font-size:15px;color:var(--ink-2);
 }
 .warmup span{color:var(--ink-3);font-weight:600;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:3px}
 
@@ -193,7 +336,7 @@ input,textarea{font:inherit;color:inherit}
 .physiobtn i{font-style:normal;font-size:12px;text-decoration:none;display:inline-block;transition:transform .15s}
 .physiobtn.open i{transform:rotate(90deg)}
 .physio{
-  margin-top:2px;padding:12px 14px;border-radius:12px;
+  margin-top:2px;padding:12px 14px;border-radius:var(--r2);
   background:var(--surface-2);border:1px solid var(--line-soft);
 }
 .warmup .physio{background:var(--surface)}
@@ -225,7 +368,7 @@ input,textarea{font:inherit;color:inherit}
 .donehead + .preview li:first-child{border-top:1px solid var(--line-soft)}
 
 .big{
-  width:100%;min-height:56px;padding:17px;border-radius:14px;background:var(--accent);color:var(--accent-ink);
+  width:100%;min-height:56px;padding:17px;border-radius:18px;background:var(--accent);color:var(--accent-ink);
   font-family:var(--f-display);font-weight:700;font-size:19px;letter-spacing:-.01em;
   margin-top:18px;
 }
@@ -235,7 +378,7 @@ input,textarea{font:inherit;color:inherit}
 
 .switcher{display:flex;gap:8px;margin-top:12px}
 .switcher button{
-  flex:1;min-height:48px;padding:10px 0;border:1px solid var(--line);border-radius:12px;background:var(--surface);
+  flex:1;min-height:48px;padding:10px 0;border:1px solid var(--line);border-radius:var(--r2);background:var(--surface);
   font-family:var(--f-display);font-weight:700;font-size:14px;color:var(--ink-2);letter-spacing:-.01em;
 }
 .switcher button.on{border-color:var(--accent);color:var(--accent-text);background:var(--accent-soft)}
@@ -246,7 +389,7 @@ input,textarea{font:inherit;color:inherit}
 /* ---------- chips ---------- */
 .chip{
   display:inline-block;font-family:var(--f-body);font-size:13px;font-weight:600;letter-spacing:.01em;
-  padding:5px 10px;border-radius:8px;white-space:nowrap;
+  padding:5px 10px;border-radius:10px;white-space:nowrap;
 }
 .chip.good{background:var(--good-bg);color:var(--good)}
 .chip.hold{background:var(--hold-bg);color:var(--hold)}
@@ -257,7 +400,7 @@ input,textarea{font:inherit;color:inherit}
 .sessbar{display:flex;align-items:center;gap:10px;min-height:48px}
 .sessbar h1{font-family:var(--f-display);font-weight:700;font-size:24px;margin:0;flex:1;letter-spacing:-.02em}
 .sessbar .fin{
-  min-height:44px;padding:10px 18px;border-radius:12px;background:var(--accent);color:var(--accent-ink);
+  min-height:44px;padding:10px 18px;border-radius:var(--r2);background:var(--accent);color:var(--accent-ink);
   font-weight:700;font-size:16px;
 }
 
@@ -269,7 +412,7 @@ input,textarea{font:inherit;color:inherit}
 .addset.holdbtn{border-style:solid;border-color:var(--accent);color:var(--accent-text);background:var(--accent-soft)}
 .vidlink{display:inline-flex;align-items:center;min-height:44px;margin-top:4px;color:var(--accent-text);font-weight:600;font-size:15px;text-decoration:underline;text-underline-offset:3px}
 .coach{
-  font-size:15px;color:var(--ink-2);padding:12px 14px;border-radius:12px;background:var(--surface-2);
+  font-size:15px;color:var(--ink-2);padding:12px 14px;border-radius:var(--r2);background:var(--surface-2);
   border-left:4px solid var(--line);
 }
 .coach.good{border-left-color:var(--good)}
@@ -287,7 +430,7 @@ input,textarea{font:inherit;color:inherit}
 .sets{display:flex;flex-direction:column;gap:8px}
 .row{display:flex;align-items:stretch;gap:8px}
 .step{
-  display:flex;align-items:stretch;border:1px solid var(--line);border-radius:12px;
+  display:flex;align-items:stretch;border:1px solid var(--line);border-radius:var(--r2);
   background:var(--surface);overflow:hidden;flex:1 1 0;min-width:0;
 }
 .step.w{flex:1.4 1 0}
@@ -310,11 +453,11 @@ input,textarea{font:inherit;color:inherit}
 .eqrow .eq-n{flex:1 1 140px;min-width:0;font-size:16px;font-weight:600}
 .eqrow .eq-n i{display:block;font-style:normal;font-weight:400;font-size:13.5px;color:var(--ink-3)}
 .eqrow select{
-  flex:none;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;
+  flex:none;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r2);
   background:var(--surface);color:var(--ink);font-size:15px;font-family:var(--f-body);
 }
 .eqrow .fixed{flex:none;font-size:15px;color:var(--ink-3);font-weight:600}
-.hands{display:flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;flex:none}
+.hands{display:flex;border:1px solid var(--line);border-radius:var(--r2);overflow:hidden;flex:none}
 .hands button{min-height:44px;padding:8px 12px;background:var(--surface);color:var(--ink-2);font-size:14px;font-weight:600}
 .hands button.on{background:var(--accent);color:var(--accent-ink)}
 /* Equipment pills inside a live exercise card. */
@@ -329,7 +472,7 @@ input,textarea{font:inherit;color:inherit}
 /* full-width log button: the biggest target on the screen, and it names the set */
 .tick{
   display:flex;align-items:center;justify-content:center;gap:9px;
-  width:100%;min-height:54px;padding:14px;border-radius:12px;border:1px solid var(--accent);
+  width:100%;min-height:54px;padding:14px;border-radius:var(--r2);border:1px solid var(--accent);
   background:var(--accent);color:var(--accent-ink);
   font-family:var(--f-display);font-weight:700;font-size:17px;letter-spacing:-.01em;
 }
@@ -337,13 +480,13 @@ input,textarea{font:inherit;color:inherit}
 .tick svg{width:22px;height:22px;flex:none}
 
 .addset{
-  width:100%;min-height:48px;padding:12px;border:1px dashed var(--line);border-radius:12px;
+  width:100%;min-height:48px;padding:12px;border:1px dashed var(--line);border-radius:var(--r2);
   background:var(--surface-2);color:var(--ink-2);font-weight:600;font-size:15px;
 }
 .addset:active{background:var(--accent-soft);color:var(--accent-text);border-color:var(--accent)}
 
 .done{
-  display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:12px;
+  display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:var(--r2);
   background:var(--good-bg);
 }
 .done .lbl{width:auto;color:var(--good);opacity:.8;font-family:var(--f-num);font-size:13px;font-weight:600}
@@ -355,7 +498,7 @@ input,textarea{font:inherit;color:inherit}
 .rpe-lbl{font-size:11px;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:2px 2px 0}
 .rpe{display:flex;gap:6px;align-items:stretch;flex-wrap:nowrap}
 .rpe button{
-  flex:1 1 0;min-width:0;height:48px;border:1px solid var(--line);border-radius:12px;
+  flex:1 1 0;min-width:0;height:48px;border:1px solid var(--line);border-radius:var(--r2);
   font-family:var(--f-num);font-size:17px;font-weight:600;color:var(--ink-2);background:var(--surface);
 }
 .rpe button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
@@ -364,13 +507,13 @@ input,textarea{font:inherit;color:inherit}
 
 .notebtn{font-size:15px;color:var(--ink-3);font-weight:600;text-align:left;padding:10px 0;min-height:44px}
 .note{
-  width:100%;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);
+  width:100%;border:1px solid var(--line);border-radius:var(--r2);background:var(--surface-2);
   padding:11px 13px;font-size:16px;font-family:var(--f-body);resize:vertical;min-height:70px;
 }
 .bandrow{display:flex;align-items:center;gap:10px}
 .bandrow label{font-size:15px;color:var(--ink-2);font-weight:600;white-space:nowrap}
 .bandrow input{
-  flex:1;min-width:0;min-height:48px;border:1px solid var(--line);border-radius:12px;background:var(--surface);
+  flex:1;min-width:0;min-height:48px;border:1px solid var(--line);border-radius:var(--r2);background:var(--surface);
   padding:11px 13px;font-size:16px;
 }
 
@@ -394,7 +537,7 @@ input,textarea{font:inherit;color:inherit}
 .rest-meta b{display:block;color:var(--ink-2);font-size:13.5px;font-weight:600;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rest button{
-  flex:none;min-height:48px;padding:10px 11px;border:1px solid var(--line);border-radius:12px;
+  flex:none;min-height:48px;padding:10px 11px;border:1px solid var(--line);border-radius:var(--r2);
   font-size:15px;font-weight:600;color:var(--ink-2);background:var(--surface-2);white-space:nowrap;
 }
 .rest button:active{background:var(--accent-soft);color:var(--accent-text)}
@@ -413,7 +556,7 @@ input,textarea{font:inherit;color:inherit}
 .h-line em{font-style:normal;font-family:var(--f-num);font-size:14px;color:var(--ink);font-variant-numeric:tabular-nums;text-align:right;max-width:62%}
 
 /* worked-out warm-up sets, shown on a main lift until the first working set is logged */
-.warm{border:1px solid var(--accent);background:var(--accent-soft);border-radius:12px;padding:8px 12px 10px}
+.warm{border:1px solid var(--accent);background:var(--accent-soft);border-radius:var(--r2);padding:8px 12px 10px}
 .warm-h{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-text);padding:4px 0 2px}
 .warm-row{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:6px 0;text-align:left;border-top:1px solid var(--line)}
 .warm-row:first-of-type{border-top:none}
@@ -435,7 +578,7 @@ input,textarea{font:inherit;color:inherit}
 .set-row:first-child{border-top:none}
 .set-row .sr-n{flex:1;min-width:0;font-size:16px;font-weight:600}
 .set-row .sr-n i{display:block;font-style:normal;font-weight:400;font-size:13.5px;color:var(--ink-3)}
-.mini{display:flex;align-items:center;border:1px solid var(--line);border-radius:12px;overflow:hidden;flex:none}
+.mini{display:flex;align-items:center;border:1px solid var(--line);border-radius:var(--r2);overflow:hidden;flex:none}
 .mini button{width:44px;height:44px;background:var(--surface-2);color:var(--ink-2);font-size:19px}
 .mini button:active{background:var(--accent-soft);color:var(--accent-text)}
 .mini input{width:62px;border:none;background:none;text-align:center;font-family:var(--f-num);font-weight:600;font-size:16px;padding:10px 0;-moz-appearance:textfield}
@@ -447,7 +590,7 @@ input,textarea{font:inherit;color:inherit}
 .ed-row{display:flex;align-items:center;gap:12px;padding:10px 0}
 .ed-row label{font-size:15px;color:var(--ink-2);font-weight:600;flex:none;min-width:86px}
 .ed-row input{
-  flex:1;min-width:0;min-height:48px;border:1px solid var(--line);border-radius:12px;
+  flex:1;min-width:0;min-height:48px;border:1px solid var(--line);border-radius:var(--r2);
   background:var(--surface);padding:11px 13px;font-size:16px;
 }
 .ed-row .ed-day{font-size:16px;font-weight:600}
@@ -455,12 +598,12 @@ input,textarea{font:inherit;color:inherit}
 .ed-set{display:flex;align-items:center;gap:8px}
 .ed-set .ed-n{width:16px;flex:none;font-family:var(--f-num);font-size:13px;color:var(--ink-3);font-weight:600}
 .ed-set .ed-reps{
-  flex:1 1 0;min-width:0;min-height:48px;border:1px solid var(--line);border-radius:12px;
+  flex:1 1 0;min-width:0;min-height:48px;border:1px solid var(--line);border-radius:var(--r2);
   background:var(--surface);padding:11px 6px;font-size:17px;text-align:center;
   font-family:var(--f-num);font-weight:600;
 }
 .ed-set select{
-  flex:none;min-height:48px;padding:8px 8px;border:1px solid var(--line);border-radius:12px;
+  flex:none;min-height:48px;padding:8px 8px;border:1px solid var(--line);border-radius:var(--r2);
   background:var(--surface);color:var(--ink);font-size:15px;font-family:var(--f-body);
 }
 /* column captions over the set rows in the editor, lined up with the inputs below */
@@ -470,18 +613,18 @@ input,textarea{font:inherit;color:inherit}
 .ed-capt .ed-c-x{flex:none;width:44px}
 .ed-set select{width:72px}
 .ed-set .ed-x{
-  flex:none;width:44px;height:44px;border:1px solid var(--line);border-radius:12px;
+  flex:none;width:44px;height:44px;border:1px solid var(--line);border-radius:var(--r2);
   color:var(--ink-3);font-size:20px;background:var(--surface);
 }
 .h-edit{
-  flex:none;min-height:36px;padding:6px 12px;border:1px solid var(--line);border-radius:10px;
+  flex:none;min-height:36px;padding:6px 12px;border:1px solid var(--line);border-radius:14px;
   color:var(--accent-text);font-size:14px;font-weight:600;background:var(--surface);
 }
 
 .sec-title{font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.02em;padding:0 2px;color:var(--ink-2)}
 .empty{padding:26px 16px;text-align:center;color:var(--ink-3);font-size:15px}
 .banner{
-  padding:12px 14px;border-radius:12px;background:var(--hold-bg);color:var(--hold);
+  padding:12px 14px;border-radius:var(--r2);background:var(--hold-bg);color:var(--hold);
   font-size:14.5px;font-weight:500;
 }
 .foot{text-align:center;font-size:13px;color:var(--ink-3);padding-top:2px}
@@ -490,7 +633,7 @@ input,textarea{font:inherit;color:inherit}
 .bk.fail{color:var(--warn)}
 .card .bk{margin:0;padding:0 16px 12px}
 .set-row a{color:var(--accent-text);font-weight:600;font-size:15px;white-space:nowrap}
-.bkbtn{flex:none;min-height:44px;padding:8px 14px;border:1px solid var(--accent);border-radius:12px;color:var(--accent-text);font-size:15px;font-weight:600;background:var(--surface)}
+.bkbtn{flex:none;min-height:44px;padding:8px 14px;border:1px solid var(--accent);border-radius:var(--r2);color:var(--accent-text);font-size:15px;font-weight:600;background:var(--surface)}
 
 /* Nothing in this app may fail silently. Anything that throws lands here, on screen. */
 .errbar{
@@ -504,7 +647,7 @@ input,textarea{font:inherit;color:inherit}
 .errbar span{display:block;font-family:var(--f-num);font-size:12.5px;margin-top:4px;word-break:break-word}
 .errbar .errbar-t{flex:1;min-width:0}
 .errbar button{
-  flex:none;min-height:44px;padding:10px 12px;border:1px solid var(--warn);border-radius:10px;
+  flex:none;min-height:44px;padding:10px 12px;border:1px solid var(--warn);border-radius:14px;
   color:var(--warn);font-weight:600;font-size:15px;
 }
 
@@ -517,8 +660,292 @@ input,textarea{font:inherit;color:inherit}
   .addset:hover{color:var(--ink)}
   .rest button:hover{color:var(--ink)}
 }
+
+/* ============================================================
+   GLASS LOOK (Nov 2026): frosted cards over a soft colour wash.
+   ============================================================ */
+body{background:var(--ground);font-variant-numeric:tabular-nums}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:var(--blobs);
+}
+.card{
+  background:var(--surface);border:1px solid var(--glass-edge);border-radius:var(--r);
+  box-shadow:var(--shadow);
+  -webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);
+}
+.topbar{background:var(--scrim);border-bottom:1px solid var(--glass-edge)}
+.brand{font-weight:800;letter-spacing:-.03em}
+.iconbtn,.textbtn{
+  background:var(--surface);border:1px solid var(--glass-edge);box-shadow:var(--shadow);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+}
+.iconbtn:active,.textbtn:active{background:var(--accent-soft)}
+.rot b{border-radius:10px;background:var(--surface);border-color:var(--glass-edge)}
+.rot b.past{background:var(--surface-2);color:var(--ink-2)}
+
+/* gradient buttons */
+.big,.tick,.sessbar .fin,.rest button.skip,
+.rot b.on,.hands button.on,.eqpick button.on,.rpe button.on{
+  background:var(--grad);color:#FFFFFF;border-color:transparent;
+}
+.big,.tick,.sessbar .fin{box-shadow:var(--glow)}
+.big{border-radius:20px}
+.big.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--glass-edge);box-shadow:var(--shadow)}
+.big.ghost.arm{background:var(--warn-bg);color:var(--warn);border-color:var(--warn)}
+.rest button.skip:active{color:#FFFFFF}
+
+/* the big day letter picks up the gradient */
+.hero-letter{
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  padding-bottom:4px;
+}
+.hero-name{font-weight:800;letter-spacing:-.03em}
+
+/* boxes inside cards */
+.warmup,.physio{background:var(--surface-2);border:1px solid var(--glass-edge)}
+.warmup .physio{background:var(--field)}
+.coach{border:1px solid var(--glass-edge);border-left:1px solid var(--glass-edge);color:var(--ink)}
+.coach.good,.coach.hold,.coach.warn,.coach.new{border-left-color:var(--glass-edge)}
+.coach.good{background:var(--good-bg)}
+.coach.hold{background:var(--hold-bg)}
+.coach.warn{background:var(--warn-bg)}
+.coach.new{background:var(--accent-soft)}
+
+.chip{border-radius:999px;padding:5px 12px}
+.chip.new{color:var(--accent-text)}
+
+/* steppers and fields */
+.step,.mini,.hands{background:var(--field);border-color:var(--glass-edge)}
+.step button,.mini button{background:var(--field-2);color:var(--accent-text)}
+.step button:active,.mini button:active{background:var(--accent-soft)}
+.step input,.mini input{font-weight:700}
+.note,.bandrow input,.ed-row input,.ed-set .ed-reps,.ed-set select,.eqrow select,.ed-set .ed-x,.h-edit,.bkbtn{
+  background:var(--field);border-color:var(--glass-edge);
+}
+.switcher button,.eqpick button,.rpe button{background:var(--field);border-color:var(--glass-edge)}
+.switcher button.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text)}
+.hands button{background:transparent}
+.addset{background:var(--surface-2);border-color:var(--accent);color:var(--accent-text)}
+.done{background:var(--good-bg);border:1px solid var(--glass-edge)}
+.warm{background:var(--accent-soft);border-color:var(--glass-edge)}
+.warm-box{border-color:var(--accent);color:#FFFFFF}
+.warm-row.on .warm-box{background:var(--grad);border-color:transparent}
+.banner{border:1px solid var(--glass-edge)}
+
+/* rest timer floats as a glass bar above the bottom edge */
+.rest{
+  left:50%;right:auto;bottom:calc(12px + env(safe-area-inset-bottom));
+  width:min(496px, calc(100% - 24px));transform:translateX(-50%);
+  padding-bottom:0;border:1px solid var(--glass-edge);border-radius:var(--r);
+  background:var(--scrim-strong);box-shadow:0 14px 40px rgba(155,65,82,.22);
+  -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+}
+.rest button{background:var(--field);border-color:var(--glass-edge)}
+.rest-clock{font-weight:800}
+.wclock{font-weight:800}
+
+.errbar{-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+
+/* ---------- 3D depth ---------- */
+body::after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:var(--orbs);
+}
+.card{
+  position:relative;isolation:isolate;
+  border-color:var(--rim);box-shadow:var(--lift);
+}
+.card::before{
+  content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;
+  background:var(--sheen);
+}
+.topbar{box-shadow:0 10px 24px -14px rgba(164,66,84,.35)}
+
+/* raised buttons */
+.iconbtn,.textbtn,.big.ghost,.rot b,.switcher button,.eqpick button,.rpe button,.rest button,
+.h-edit,.bkbtn,.ed-set .ed-x,.hands{
+  background:var(--btn-face);border-color:var(--rim);box-shadow:var(--btn-lift);
+}
+.big,.tick,.sessbar .fin,.rest button.skip,
+.rot b.on,.hands button.on,.eqpick button.on,.rpe button.on{
+  background:var(--grad);border-color:transparent;box-shadow:var(--glow);
+}
+.switcher button.on{background:var(--accent-soft);border-color:var(--accent);box-shadow:var(--well)}
+.big:active,.tick:active,.sessbar .fin:active,.rest button:active,.rpe button:active,
+.switcher button:active,.eqpick button:active,.iconbtn:active,.textbtn:active{
+  transform:translateY(1px) scale(.985);filter:brightness(.97);
+}
+
+/* sunken fields and steppers */
+.step,.mini{background:var(--field);border-color:var(--rim);box-shadow:var(--btn-lift)}
+.step input,.mini input,.mini .mv{box-shadow:var(--well)}
+.step button,.mini button{background:var(--btn-face)}
+.note,.bandrow input,.ed-row input,.ed-set .ed-reps,.ed-set select,.eqrow select{box-shadow:var(--well)}
+
+/* inner boxes sit slightly sunk into the card */
+.warmup,.coach,.done,.warm,.physio,.banner{box-shadow:var(--well)}
+
+/* the big letter and chips get a little lift too */
+.hero-letter{filter:drop-shadow(0 6px 10px rgba(238,100,126,.35))}
+.chip{box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 3px 8px -3px rgba(164,66,84,.25)}
+
+.rest{border-color:var(--rim);box-shadow:var(--lift), 0 18px 40px -10px rgba(164,66,84,.35)}
+
+.rpe-help:empty{display:none}
+
+/* ---------- round 3: thick glass slabs, glare, 3D tiles, glass cubes ---------- */
+.card{background:var(--card-face);box-shadow:var(--slab), var(--lift);margin-bottom:6px}
+.wrap > .card:nth-child(3n+1){background:linear-gradient(160deg, var(--tint-1), transparent 70%), var(--card-face)}
+.wrap > .card:nth-child(3n+2){background:linear-gradient(160deg, var(--tint-2), transparent 70%), var(--card-face)}
+.wrap > .card:nth-child(3n){background:linear-gradient(160deg, var(--tint-3), transparent 70%), var(--card-face)}
+.card::before{background:var(--glare), var(--sheen)}
+
+/* raised buttons get a visible side; they sink when pressed */
+.iconbtn,.textbtn,.big.ghost,.rot b,.switcher button,.eqpick button,.rpe button,.rest button,
+.h-edit,.bkbtn,.ed-set .ed-x,.hands,.step,.mini{box-shadow:var(--btn-slab), var(--btn-lift)}
+.big,.tick,.sessbar .fin,.rest button.skip,.rot b.on,.eqpick button.on,.rpe button.on{box-shadow:var(--grad-slab), var(--glow)}
+.hands button.on{box-shadow:none}
+.switcher button.on{box-shadow:var(--well)}
+.big:active,.tick:active,.sessbar .fin:active,.rest button:active,.rpe button:active,
+.switcher button:active,.eqpick button:active,.iconbtn:active,.textbtn:active{
+  transform:translateY(3px);box-shadow:var(--btn-lift);
+}
+.big:active,.tick:active,.sessbar .fin:active,.rest button.skip:active{box-shadow:var(--glow)}
+
+/* the day letter becomes a glossy 3D tile */
+.hero-top{align-items:center}
+.hero-letter{
+  width:84px;height:84px;flex:none;display:grid;place-items:center;border-radius:26px;padding:0;
+  background:radial-gradient(120% 80% at 28% 12%, rgba(255,255,255,.6), transparent 46%), var(--grad);
+  -webkit-background-clip:border-box;background-clip:border-box;color:#FFFFFF;
+  font-size:50px;line-height:1;letter-spacing:-.03em;filter:none;
+  text-shadow:0 2px 4px rgba(134,16,37,.35);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.6), inset 0 -6px 12px rgba(134,16,37,.3),
+    0 5px 0 #C9465F, 0 6px 2px rgba(154,37,57,.4), 0 22px 30px -10px rgba(238,100,126,.6);
+}
+
+/* glossy icon tiles beside exercise names */
+.ico{
+  width:42px;height:42px;flex:none;border-radius:13px;display:grid;place-items:center;
+  background:radial-gradient(120% 80% at 30% 12%, rgba(255,255,255,.55), transparent 46%), linear-gradient(145deg, var(--c1), var(--c2));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), inset 0 -3px 6px rgba(0,0,0,.15), 0 3px 0 var(--c3), 0 10px 18px -6px var(--c2);
+}
+.ico svg{width:23px;height:23px;fill:none;stroke:#FFFFFF;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+.ico.v{--c1:#FBAABA;--c2:#F65675;--c3:#C93B57}
+.ico.p{--c1:#FBAEAA;--c2:#DB625C;--c3:#B24540}
+.ico.b{--c1:#A9F5EE;--c2:#5FE0D3;--c3:#43B6AA}
+.ico.o{--c1:#FFC9A0;--c2:#FF8757;--c3:#D9653A}
+.ex-head{align-items:center;gap:12px}
+
+/* glass cubes floating behind the cards */
+.deco{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.deco i{
+  position:absolute;display:block;border-radius:24%;
+  background:var(--cube-face);border:1px solid var(--cube-edge);box-shadow:var(--cube-shadow);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+}
+.deco i:nth-child(1){width:72px;height:72px;top:9%;right:-20px;transform:rotate(18deg)}
+.deco i:nth-child(2){width:48px;height:48px;top:36%;left:-16px;transform:rotate(-14deg)}
+.deco i:nth-child(3){width:92px;height:92px;top:60%;right:-36px;transform:rotate(-22deg)}
+.deco i:nth-child(4){width:56px;height:56px;bottom:5%;left:-12px;transform:rotate(26deg)}
+.deco i:nth-child(5){width:40px;height:40px;top:22%;left:46%;transform:rotate(10deg)}
+.nw{white-space:nowrap}
+
+/* ---------- round 4: logged sets, weight pill, notebook button ---------- */
+.done{
+  background:var(--btn-face);border:1px solid var(--rim);border-radius:var(--r2);
+  box-shadow:var(--btn-slab), var(--btn-lift);padding:9px 10px;gap:12px;
+}
+.done .lbl{
+  width:32px;height:32px;flex:none;display:grid;place-items:center;border-radius:10px;opacity:1;
+  color:#FFFFFF;font-family:var(--f-display);font-size:15px;font-weight:800;
+  background:radial-gradient(120% 80% at 30% 12%, rgba(255,255,255,.55), transparent 46%), linear-gradient(145deg,#A9F5EE,#5FE0D3);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 2px 0 #43B6AA, 0 6px 12px -4px #5FE0D3;
+}
+.done .val{color:var(--ink);font-weight:700;font-size:16.5px}
+.done .undo{
+  min-height:36px;padding:6px 14px;border-radius:999px;opacity:1;font-size:14px;font-weight:700;
+  color:var(--accent-text);background:var(--btn-face);border:1px solid var(--rim);
+  box-shadow:var(--btn-slab), var(--btn-lift);
+}
+.done .undo:active{transform:translateY(2px);box-shadow:var(--btn-lift)}
+
+.totline{
+  align-self:flex-start;width:max-content;max-width:100%;margin-top:2px;padding:5px 12px;
+  border-radius:999px;border:1px solid var(--rim);
+  background:var(--accent-soft);color:var(--accent-text);
+  font-family:var(--f-body);font-size:13.5px;font-weight:700;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 2px 0 rgba(244,145,164,.35);
+}
+
+.notebtn{display:flex;align-items:center;gap:10px;align-self:flex-start;max-width:100%;padding:6px 0;min-height:48px;color:var(--ink-2)}
+.nbk{
+  width:40px;height:40px;flex:none;border-radius:13px;display:grid;place-items:center;
+  background:radial-gradient(120% 80% at 30% 12%, rgba(255,255,255,.6), transparent 46%), linear-gradient(145deg,#FFD6A8,#F99C95);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75), inset 0 -3px 6px rgba(0,0,0,.12), 0 3px 0 #D3746C, 0 10px 18px -6px #F99C95;
+  transition:transform .1s;
+}
+.nbk svg{width:22px;height:22px;fill:none;stroke:#FFFFFF;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 1px rgba(0,0,0,.2))}
+.notebtn:active .nbk,.notebtn.on .nbk{transform:translateY(3px);box-shadow:inset 0 1px 0 rgba(255,255,255,.75), inset 0 -3px 6px rgba(0,0,0,.12), 0 0 0 #D3746C}
+.nbk-t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px;font-weight:600;color:var(--ink-2)}
+.ex-head:has(.ico) + .ex-sub{margin-left:54px;margin-top:-14px;font-weight:600;color:var(--ink-2)}
+/* ---------- History: one glass card per workout (Nov 2026) ---------- */
+.h-month{margin-top:8px}
+.wrap > .card.hcard{padding:16px 16px 8px}
+.wrap > .card.hcard.t1{background:linear-gradient(160deg, var(--tint-1), transparent 70%), var(--card-face)}
+.wrap > .card.hcard.t2{background:linear-gradient(160deg, var(--tint-2), transparent 70%), var(--card-face)}
+.wrap > .card.hcard.t3{background:linear-gradient(160deg, var(--tint-3), transparent 70%), var(--card-face)}
+.hc-top{display:flex;align-items:center;gap:12px}
+.hc-day,.hc-top > .ico{width:48px;height:48px;border-radius:15px}
+.hc-day{
+  flex:none;display:grid;place-items:center;color:#FFFFFF;
+  font-family:var(--f-display);font-weight:800;font-size:26px;line-height:1;letter-spacing:-.03em;
+  text-shadow:0 1px 3px rgba(96,15,29,.35);
+  background:radial-gradient(120% 80% at 28% 12%, rgba(255,255,255,.6), transparent 46%), linear-gradient(145deg, var(--c1), var(--c2));
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.6), inset 0 -4px 8px rgba(0,0,0,.15), 0 4px 0 var(--c3), 0 12px 20px -8px var(--c2);
+}
+.hc-day.dA{--c1:#FBAABA;--c2:#F65675;--c3:#C93B57}
+.hc-day.dB{--c1:#A9F5EE;--c2:#5FE0D3;--c3:#43B6AA}
+.hc-day.dC{--c1:#FBAEAA;--c2:#DB625C;--c3:#B24540}
+.hc-day.dD{--c1:#FFC9A0;--c2:#FF8757;--c3:#D9653A}
+.hc-t{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.hc-t b{font-family:var(--f-display);font-weight:800;font-size:21px;letter-spacing:-.02em;line-height:1.1}
+.hc-when{
+  padding:3px 10px;border-radius:999px;border:1px solid var(--rim);white-space:nowrap;
+  background:var(--accent-soft);color:var(--accent-text);font-size:13px;font-weight:700;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 2px 0 rgba(244,145,164,.35);
+}
+.hcard .h-edit{border-radius:999px;padding:6px 16px}
+.hcard .h-edit:active{transform:translateY(3px);box-shadow:var(--btn-lift)}
+.hc-list{margin-top:12px}
+.hc-list li{padding:10px 0}
+.hc-list .pv-n b{font-size:16.5px}
+.hc-list .pv-n i{display:block;margin-top:2px;font-family:var(--f-num);font-weight:700;font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
+.hc-list li.skipped .ico{filter:grayscale(.7);opacity:.55}
+.hc-list li.skipped .pv-n i{font-family:var(--f-body);font-style:italic;font-weight:500;color:var(--ink-3)}
+.hc-list li.hc-noterow{border-top:none;padding:0 0 10px 54px}
+.hc-nb{padding:0;min-height:44px;align-self:center}
+.hc-nb .nbk{width:36px;height:36px;border-radius:12px}
+.hc-nb .nbk svg{width:20px;height:20px}
+.hc-note{
+  flex:1;padding:10px 12px;border-radius:var(--r2);
+  background:var(--field);border:1px solid var(--rim);box-shadow:var(--well);
+  font-size:14.5px;line-height:1.4;color:var(--ink-2);white-space:pre-wrap;
+}
+.hcard > .hc-note{margin:0 0 10px}
+.hc-stats{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 8px}
+.hc-stats > span{
+  padding:6px 12px;border-radius:999px;background:var(--btn-face);border:1px solid var(--rim);
+  box-shadow:var(--btn-lift);font-family:var(--f-num);font-weight:700;font-size:14.5px;color:var(--ink);
+}
+.hc-stats .hc-nb{margin-left:auto}
+.hc-wnote{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line-soft);padding:6px 0 4px}
+.hc-wnote span{font-size:14.5px;font-weight:600;color:var(--ink-3)}
+
 </style>
 
+<div class="deco" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
 <div class="wrap" id="app"></div>
 <div id="restmount"></div>
 <div id="errmount"></div>
@@ -540,7 +967,7 @@ const DAYS = ["A","B","C"];
 const PROGRAM = {
   A: {
     name: "Lower body + core",
-    warmup: "10-15 sit-to-stands from a chair, then dynamic leg swings",
+    warmup: "5-minute easy treadmill walk. Then 10-15 sit-to-stands from a chair and leg swings.",
     slots: [
       { id:"goblet_squat", name:"Goblet squat", main:true, sets:3, repLow:8, repHigh:10, rest:120, inc:2.5,
         cue:"One dumbbell held upright at your chest." },
@@ -553,15 +980,13 @@ const PROGRAM = {
         cue:"Band just above the knees." },
       { id:"dead_bug", name:"Dead bug", banded:true, noBand:true, per:"per side", sets:2, repLow:6, repHigh:8, rest:90,
         cue:"2-second pause at the bottom." },
-      { id:"side_plank", name:"Side plank", banded:true, noBand:true, timed:true, per:"per side", sets:3, repLow:10, repHigh:10, rest:90,
-        bwNext:{ chip:"Steady", msg:"Every hold done. Stay at 10 seconds unless it starts to feel easy." } },
       { id:"bird_dog", name:"Bird dog", banded:true, noBand:true, per:"per side", sets:2, repLow:6, repHigh:8, rest:90,
         cue:"Hold each rep for 5 seconds." }
     ]
   },
   B: {
-    name: "Upper body push",
-    warmup: "Arm circles, then light band pull-aparts",
+    name: "Upper body push + core",
+    warmup: "5-minute easy treadmill walk. Then arm circles and light band pull-aparts.",
     slots: [
       { id:"shoulder_press", name:"Seated dumbbell shoulder press", main:true, sets:3, repLow:8, repHigh:10, stretch:12, rest:120, inc:2.5,
         cue:"Bench one notch back from upright. Done first on purpose: best for bone." },
@@ -569,12 +994,14 @@ const PROGRAM = {
         cue:"Bench at about 30 to 45 degrees." },
       { id:"incline_pushup", name:"Incline push-up", banded:true, noBand:true, sets:2, repLow:8, repHigh:12, rest:90,
         cue:"Hands flat on a countertop or wall.",
-        bwNext:{ chip:"Go lower", msg:"Top of the range on every set last time. This time use a lower surface, like a sturdy table." } }
+        bwNext:{ chip:"Go lower", msg:"Top of the range on every set last time. This time use a lower surface, like a sturdy table." } },
+      { id:"side_plank", name:"Side plank", banded:true, noBand:true, timed:true, per:"per side", sets:3, repLow:10, repHigh:10, rest:90,
+        bwNext:{ chip:"Steady", msg:"Every hold done. Stay at 10 seconds unless it starts to feel easy." } }
     ]
   },
   C: {
     name: "Pull + back + core",
-    warmup: "Cat-cow, then thoracic rotations",
+    warmup: "5-minute easy treadmill walk. Then cat-cow and upper-back twists.",
     video: "https://www.youtube.com/watch?v=4s15-oQ-q_4",
     slots: [
       { id:"rdl", name:"Romanian deadlift", main:true, sets:3, repLow:8, repHigh:10, rest:120, inc:5,
@@ -724,13 +1151,13 @@ function loadHint(ex, w){
 
 /* Bumped on every publish, and shown at the foot of Settings, so it is possible to tell from
    the phone which build is actually running. */
-const BUILD = "mom-2026-11-07b";
+const BUILD = "mom-2026-11-10a";
 /* Bumped whenever the coaching rules change. On first open after a bump, every lift is rebuilt
    from her saved history so the new rules apply to her next workout straight away.
    2 = second "Hold" in a row moves her up; weights follow the GEAR list.
    3 = lunges by total weight with chest-hold steps; presses build to 12 reps before 20 lb;
        messages say "this time". */
-const COACH_V = 3;
+const COACH_V = 4;   // 4: plainer "Stick to X lb again" wording (2026-11-10)
 
 /* Dates follow the clock on her phone. toISOString() is UTC, which put evening workouts on
    tomorrow. */
@@ -924,7 +1351,7 @@ function totalLine(ex, val){
   const blank = (val === "" || val == null || isNaN(v));
   if (eq === "dumbbell") {
     if (blank) return "The whole weight of one dumbbell.";
-    return v + " lb " + (handsFor(ex) === "one" ? "in one hand" : "in each hand");
+    return v + " lb " + (handsFor(ex) === "one" ? "one hand" : "each hand");
   }
   if (!isPerSide(ex)) {
     // Spell out what to pick up (or which plates), so "Total weight" is never a guess.
@@ -1113,10 +1540,12 @@ function progress(ex, entry, prev){
   } else {
     stalls = 0;
     const aim = Math.min(hi, Math.min.apply(null, judged) + 1);
-    let msg = "Same weight. Aim for " + aim + " on every set this time.";
+    const stick = w ? "Stick to " + w + " lb again, but " : (ex.banded ? "Same band again, but " : "");
+    const per = ex.per ? " " + ex.per : "";
+    const cap = function(t){ return stick ? t : t.charAt(0).toUpperCase() + t.slice(1); };
+    let msg = stick + cap("aim for " + aim + " reps" + per + " every set this time.");
     if (bigJump && aim > ex.repHigh)
-      msg = aim < hi ? "Same weight. Time to go up to " + aim + " or " + hi + " reps per set this time."
-                     : "Same weight. Time to go up to " + hi + " reps per set this time.";
+      msg = stick + cap("go up to " + (aim < hi ? aim + " or " + hi : hi) + " reps" + per + " every set this time.");
     next = { weight:w, reps:aim, tone:"hold", chip:"Add a rep", msg:msg };
   }
 
@@ -1162,7 +1591,7 @@ function bodyCoach(ex, next, judged, hitTop){
   else if (n.chip === "Ease off")
     n.msg = "Two tough sessions in a row. Do fewer, slower, good-form reps for a couple of weeks.";
   else if (n.chip === "Add a rep")
-    n.msg = "Aim for " + n.reps + unit + " on every set this time.";
+    n.msg = "Aim for " + n.reps + (unit || " reps") + (ex.per ? " " + ex.per : "") + " every set this time.";
   else if (n.chip === "Hold")
     n.msg = "Last time you hit the top of the range but it felt very hard. Stay at the same level this time. " +
             "Hit the top again and you move up.";
@@ -1722,6 +2151,34 @@ function targetText(ex, t){
   return t.weight + '<em> lb &middot; ' + ex.sets + '&times;' + t.reps + '</em>';
 }
 
+/* Glossy 3D icon tile shown beside an exercise name. Shape by kind of move, colour by kind. */
+const ICON_SVG = {
+  dumbbell:'<path d="M9 12h6M5 9.5v5M8 7.5v9M16 7.5v9M19 9.5v5"/>',
+  cable:   '<path d="M3 4h18M8 4l2 5M16 4l-2 5"/><circle cx="12" cy="10" r="2"/><path d="M12 12v5M10 21l2-4 2 4"/>',
+  band:    '<path d="M4 15c0-5 3-8 8-8s8 3 8 8"/><path d="M4 15h3M17 15h3"/>',
+  body:    '<circle cx="6" cy="9" r="2"/><path d="M8.5 10.5l5 2.5h6.5M12 12.2l-1.5 5M3 19h18"/>'
+};
+const ICON_KIND = {
+  goblet_squat:["dumbbell","v"], reverse_lunge:["dumbbell","p"], glute_bridge:["body","o"],
+  clamshell:["band","b"], dead_bug:["body","o"], side_plank:["body","p"], bird_dog:["body","b"],
+  shoulder_press:["dumbbell","v"], incline_bench:["dumbbell","p"], incline_pushup:["body","b"],
+  rdl:["dumbbell","v"], lat_pulldown:["cable","b"], cable_row:["cable","o"], pull_aparts:["band","p"]
+};
+function icoTile(id){
+  const k = ICON_KIND[id] || ["dumbbell","v"];
+  return '<span class="ico ' + k[1] + '" aria-hidden="true"><svg viewBox="0 0 24 24">' + ICON_SVG[k[0]] + '</svg></span>';
+}
+
+/* Notebook icon button. Icon only until there is a note; then the start of the note shows beside it. */
+const NOTE_SVG = '<svg viewBox="0 0 24 24"><rect x="6" y="3" width="13" height="18" rx="3"/><path d="M10 8h5M10 12h5M10 16h3"/><path d="M4 7.5h4M4 12h4M4 16.5h4"/></svg>';
+function noteBtn(attrs, open, note){
+  const label = open ? "Hide note" : (note ? "Edit note" : "Add a note");
+  return '<button class="notebtn' + (open ? " on" : "") + '" ' + attrs + ' type="button" aria-label="' + label + '" title="' + label + '">' +
+    '<span class="nbk" aria-hidden="true">' + NOTE_SVG + '</span>' +
+    (note && !open ? '<span class="nbk-t">' + esc(note.slice(0,40)) + (note.length > 40 ? "..." : "") + '</span>' : '') +
+    '</button>';
+}
+
 function viewHome(){
   const day = S.rot.day, P = PROGRAM[day];
   const list = exercisesFor(day, S.rot);
@@ -1731,14 +2188,13 @@ function viewHome(){
   let h = '<div class="card hero">';
   h += '<div class="eyebrow">' + (resume ? "In progress" : "Next up") + '</div>';
   h += '<div class="hero-top"><span class="hero-letter">' + day + '</span>' +
-       '<span><span class="hero-name">' + esc(P.name) + '</span>' +
-       '<span class="hero-variant">' + esc(list.filter(e=>e.main).map(e=>e.name).join(" · ")) + '</span></span></div>';
+       '<span><span class="hero-name">' + esc(P.name) + '</span></span></div>';
   h += '<div class="warmup"><span>Warm up</span>' + esc(P.warmup) + videoLink(P) + '</div>';
   h += '<ul class="preview">';
   for (const ex of list) {
     const t = targetFor(ex);
-    h += '<li><div class="pv-n"><b>' + esc(ex.name) + '</b><i>' + ex.sets + ' sets &middot; ' +
-         repText(ex) + ' &middot; rest ' + mmss(ex.rest) +
+    h += '<li>' + icoTile(ex.id) + '<div class="pv-n"><b>' + esc(ex.name) + '</b><i>' + ex.sets + ' sets &middot; ' +
+         repText(ex) + ' &middot; <span class="nw">rest ' + mmss(ex.rest) + '</span>' +
          '</i></div><div class="pv-t">' + targetText(ex, t) + '</div></li>';
   }
   h += '</ul>';
@@ -1782,7 +2238,7 @@ function setsBlock(ex, e, t){
          '" aria-label="' + esc(v + ". " + RPE_HELP[v]) + '">' + v + '</button>').join("") + '</div>';
     h += '<div class="rpe-help">' +
          (s.rpe ? '<b>' + s.rpe + '</b> &middot; ' + esc(RPE_HELP[s.rpe])
-                : '6 is easy. 10 means there was no way you could lift one more rep.') +
+                : '8 means 2 more reps were there. 9 means maybe 1 more. 10 means you could not do a single rep more.') +
          '</div>';
   });
 
@@ -1901,9 +2357,8 @@ function viewSession(){
     const slot = PROGRAM[d.day].slots.find(s => s.alt && s.options.some(o => o.id === ex.id));
 
     h += '<div class="card ex">';
-    h += '<div class="ex-head"><h2>' + esc(ex.name) + '</h2><span class="chip ' + t.tone + '">' + esc(t.chip) + '</span></div>';
-    h += '<div class="ex-sub">' + ex.sets + ' sets &times; ' + repText(ex) + ' &middot; rest ' +
-         mmss(ex.rest) + '</div>';
+    h += '<div class="ex-head">' + icoTile(ex.id) + '<h2>' + esc(ex.name) + '</h2></div>';
+    h += '<div class="ex-sub">' + ex.sets + ' &times; ' + t.reps + (ex.timed ? ' s' : '') + (ex.per ? ' ' + esc(ex.per) : '') + '</div>';
     if (ex.cue) h += '<div class="ex-cue">' + esc(ex.cue) + '</div>';
     h += '<div class="coach ' + t.tone + '">' + esc(t.msg);
     if (lift && lift.date && lift.reps && lift.reps.length) {
@@ -1943,8 +2398,7 @@ function viewSession(){
     h += setsBlock(ex, e, t);
 
     const open = S.openNotes[ex.id];
-    h += '<button class="notebtn" data-act="note" data-ex="' + ex.id + '" type="button">' +
-         (open ? "Hide note" : (e.note ? "Note: " + esc(e.note.slice(0,40)) + (e.note.length>40?"...":"") : "+ Add a note")) + '</button>';
+    h += noteBtn('data-act="note" data-ex="' + ex.id + '"', open, e.note);
     if (open) {
       h += '<textarea class="note" data-act="notetext" data-ex="' + ex.id +
            '" placeholder="Anything worth remembering next time">' + esc(e.note) + '</textarea>';
@@ -2179,10 +2633,7 @@ function viewEdit(){
     h += '</div>';
     h += '<button class="addset" data-act="ehaddset" data-ex="' + e.id + '" type="button">+ Add a set</button>';
     const nk = "ed_" + e.id;
-    h += '<button class="notebtn" data-act="ehnoteopen" data-ex="' + e.id + '" type="button">' +
-         (S.openNotes[nk] ? "Hide note"
-            : (e.note ? "Note: " + esc(e.note.slice(0,40)) + (e.note.length>40?"...":"") : "+ Add a note")) +
-         '</button>';
+    h += noteBtn('data-act="ehnoteopen" data-ex="' + e.id + '"', S.openNotes[nk], e.note);
     if (S.openNotes[nk]) {
       h += '<textarea class="note" data-act="ehnote" data-ex="' + e.id +
            '" placeholder="Anything worth remembering">' + esc(e.note || "") + '</textarea>';
@@ -2200,39 +2651,70 @@ function viewEdit(){
 function viewHistory(){
   let h = '<div class="sessbar"><h1>History</h1></div>';
 
-  h += '<div class="sec-title">Sessions</div>';
   if (!S.sessions.length) {
     h += '<div class="card empty">Nothing logged yet. Finish a workout and it will show up here.</div>';
   } else {
-    h += '<div class="card">';
+    let month = null, n = 0;
     for (const s of S.sessions) {
-      h += '<div class="h-item"><div class="h-top"><b>' + s.day + ' &middot; ' + esc(s.dayName) + '</b>' +
-           '<time>' + fmtDate(s.date) +
-           (s.durationSec != null ? ' &middot; ' + hms(s.durationSec) : '') + '</time>' +
-           '<button class="h-edit" data-act="ehopen" data-id="' + esc(s.id) + '" type="button">Edit</button>' +
-           '</div><div class="h-body">';
+      const m = monthLabel(s.date);
+      if (m !== month) { month = m; h += '<div class="sec-title h-month">' + esc(m) + '</div>'; }
+      const tint = ' t' + ((n++ % 3) + 1);
+      // A workout left open for hours shows no time rather than a silly one.
+      const mins = (s.durationSec != null && s.durationSec <= 4*3600) ? ' &middot; ' + Math.max(1, Math.round(s.durationSec / 60)) + ' min' : '';
+      h += '<div class="card hcard' + tint + '"><div class="hc-top">' +
+           '<span class="hc-day d' + esc(s.day) + '" aria-hidden="true">' + esc(s.day) + '</span>' +
+           '<div class="hc-t"><b>' + esc(s.dayName) + '</b><span class="hc-when">' + longDate(s.date) + mins + '</span></div>' +
+           '<button class="h-edit" data-act="ehopen" data-id="' + esc(s.id) + '" type="button">Edit</button></div>';
+      h += '<ul class="preview hc-list">';
       for (const e of s.entries) {
         const skipped = e.skipped || !e.sets || !e.sets.length;
-        if (skipped) {
-          h += '<div class="h-line skipped"><span>' + esc(e.name) + '</span><em>Skipped</em></div>';
-        } else {
-          h += '<div class="h-line"><span>' + esc(e.name) + '</span><em>' + setsSummary(e, "BW", "") + '</em></div>';
-        }
-        if (e.note) h += '<div class="h-note">' + esc(e.note) + '</div>';
+        const k = "h|" + s.id + "|" + e.id;
+        h += '<li' + (skipped ? ' class="skipped"' : '') + '>' + icoTile(e.id) +
+             '<div class="pv-n"><b>' + esc(e.name) + '</b><i>' + (skipped ? 'Skipped' : setsSummary(e, "BW", "")) + '</i></div>' +
+             (e.note ? histNoteBtn(k, e.name + " note") : '') + '</li>';
+        h += histNote(k, e.note, true);
       }
-      if (s.note) h += '<div class="h-line"><span style="color:var(--ink-3)">' + esc(s.note) + '</span></div>';
-      h += '</div></div>';
+      h += '</ul>';
+      if (s.note) {
+        const k = "h|" + s.id + "|note";
+        h += '<div class="hc-wnote">' + histNoteBtn(k, "workout note") + '<span>Workout note</span></div>' + histNote(k, s.note);
+      }
+      h += '</div>';
     }
-    h += '</div>';
   }
 
-  h += '<div class="sec-title">Add a workout you never logged</div>';
+  h += '<div class="sec-title h-month">Add a workout you never logged</div>';
   h += '<div class="card pad"><div class="switcher" style="margin-top:0">' +
        DAYS.map(function(d){
          return '<button data-act="ehnew" data-day="' + d + '" type="button">' +
                 d + ' &middot; ' + PROGRAM[d].name + '</button>';
        }).join("") + '</div></div>';
   return h;
+}
+
+/* History notes stay hidden behind the notebook icon until tapped. */
+function histNoteBtn(key, label){
+  const open = !!S.openNotes[key];
+  const words = (open ? "Hide " : "Show ") + label;
+  return '<button class="notebtn hc-nb' + (open ? " on" : "") + '" data-act="hnote" data-key="' + esc(key) +
+         '" type="button" aria-expanded="' + open + '" aria-label="' + esc(words) + '" title="' + esc(words) + '">' +
+         '<span class="nbk" aria-hidden="true">' + NOTE_SVG + '</span></button>';
+}
+function histNote(key, note, inList){
+  if (!note || !S.openNotes[key]) return '';
+  return inList ? '<li class="hc-noterow"><div class="hc-note">' + esc(note) + '</div></li>'
+                : '<div class="hc-note">' + esc(note) + '</div>';
+}
+function monthLabel(iso){
+  const d = new Date(String(iso).slice(0,10) + "T12:00:00");
+  if (isNaN(d)) return "Earlier";
+  const sameYear = String(iso).slice(0,4) === todayISO().slice(0,4);
+  return d.toLocaleDateString(undefined, sameYear ? { month:"long" } : { month:"long", year:"numeric" });
+}
+function longDate(iso){
+  const d = new Date(String(iso).slice(0,10) + "T12:00:00");
+  if (isNaN(d)) return esc(iso);
+  return d.toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric" });
 }
 
 
@@ -2540,6 +3022,12 @@ document.addEventListener("click", function(ev){
       const en = editEntry(exId);
       if (!en) break;
       en.sets.splice(Number(b.getAttribute("data-i")), 1);
+      render();
+      break;
+    }
+    case "hnote": {
+      const k = b.getAttribute("data-key");
+      S.openNotes[k] = !S.openNotes[k];
       render();
       break;
     }
