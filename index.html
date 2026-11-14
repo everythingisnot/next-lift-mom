@@ -978,7 +978,7 @@ const IMPACT = [
 const PROGRAM = {
   A: {
     name: "Lower body + core",
-    warmup: ["5-minute easy treadmill walk", "10-15 sit-to-stands from a chair", "Leg swings"].concat(IMPACT),
+    warmup: ["3-5 minute easy treadmill walk", "10-15 sit-to-stands from a chair", "Leg swings"].concat(IMPACT),
     slots: [
       { id:"goblet_squat", name:"Goblet squat", main:true, sets:3, repLow:8, repHigh:10, rest:120, inc:2.5,
         cue:"One dumbbell held upright at your chest." },
@@ -995,7 +995,7 @@ const PROGRAM = {
   },
   B: {
     name: "Upper body push + core",
-    warmup: ["5-minute easy treadmill walk", "Arm circles", "Light band pull-aparts"].concat(IMPACT),
+    warmup: ["3-5 minute easy treadmill walk", "Arm circles", "Light band pull-aparts"].concat(IMPACT),
     slots: [
       { id:"shoulder_press", name:"Seated dumbbell shoulder press", main:true, sets:3, repLow:8, repHigh:10, stretch:12, rest:120, inc:2.5,
         cue:"Bench one notch back from upright. Done first on purpose: best for bone." },
@@ -1007,7 +1007,7 @@ const PROGRAM = {
   },
   C: {
     name: "Pull + back",
-    warmup: ["5-minute easy treadmill walk", "Cat-cow", "Upper-back twists"].concat(IMPACT),
+    warmup: ["3-5 minute easy treadmill walk", "Cat-cow", "Upper-back twists"].concat(IMPACT),
     video: "https://www.youtube.com/watch?v=4s15-oQ-q_4",
     slots: [
       { id:"rdl", name:"Romanian deadlift", main:true, sets:3, repLow:8, repHigh:10, rest:120, inc:5,
@@ -1154,7 +1154,7 @@ function loadHint(ex, w){
 
 /* Bumped on every publish, and shown at the foot of Settings, so it is possible to tell from
    the phone which build is actually running. */
-const BUILD = "mom-2026-11-14b";
+const BUILD = "mom-2026-11-14c";
 /* Bumped whenever the coaching rules change. On first open after a bump, every lift is rebuilt
    from her saved history so the new rules apply to her next workout straight away.
    2 = second "Hold" in a row moves her up; weights follow the GEAR list.
