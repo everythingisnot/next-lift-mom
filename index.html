@@ -1012,8 +1012,10 @@ const PROGRAM = {
     slots: [
       { id:"rdl", name:"Romanian deadlift", main:true, sets:3, repLow:8, repHigh:10, rest:120, inc:5,
         cue:"Done first while fresh. Spine neutral the whole way. Type the total weight you hold." },
-      { id:"lat_pulldown", name:"Lat pulldown", sets:2, repLow:9, repHigh:10, rest:90, inc:5 },
-      { id:"cable_row", name:"Seated cable row", sets:3, repLow:10, repHigh:12, rest:90, inc:5 }
+      { id:"lat_pulldown", name:"Lat pulldown", sets:2, repLow:9, repHigh:10, stretch:12, rest:90, inc:5,
+        cue:"Same plates on both sides. Type the weight on one side." },
+      { id:"cable_row", name:"Seated cable row", sets:3, repLow:10, repHigh:12, stretch:15, rest:90, inc:5,
+        cue:"Same plates on both sides. Type the weight on one side." }
     ]
   }
 };
@@ -1038,8 +1040,12 @@ const EQUIP = {
   ssb:      { name:"SSB bar",         short:"SSB",    perSide:true,  bar:"ssb" },
   trap:     { name:"Trap bar",        short:"Trap",   perSide:true,  bar:"trap" },
   dumbbell: { name:"Dumbbell",        short:"DB",     perSide:false },
-  total:    { name:"Type the total",  short:"Manual", perSide:false }
+  total:    { name:"Type the total",  short:"Manual", perSide:false },
+  cable2:   { name:"Cable, both sides", short:"Cable", perSide:true, side:true }   // no bar: total = 2 x one side
 };
+/* Two-sided cable: she types and reads ONE side; the app stores the total. */
+function isSideEquip(eq){ return !!(eq && EQUIP[eq] && EQUIP[eq].side); }
+function lbFor(eq, w){ return isSideEquip(eq) ? (Math.round(w / 2 * 100) / 100) + " lb a side" : w + " lb"; }
 const EQUIP_ORDER = ["barbell","ssb","dumbbell","total"];
 
 const BAR_NAME    = { barbell:"Barbell", ssb:"SSB bar", trap:"Trap bar" };
@@ -1050,7 +1056,7 @@ const BAR_ORDER   = ["barbell","ssb","trap"];
 const EQUIP_DEFAULT = {
   goblet_squat:"total", reverse_lunge:"total", glute_bridge:"total",
   shoulder_press:"dumbbell", incline_bench:"dumbbell",
-  rdl:"total", lat_pulldown:"total", cable_row:"total"
+  rdl:"total", lat_pulldown:"cable2", cable_row:"cable2"
 };
 /* Dumbbell work is logged per dumbbell either way; this only changes the wording on screen. */
 const HANDS_DEFAULT = {};
@@ -1077,14 +1083,16 @@ const LOAD_KIND = {
 };
 function uniqSorted(a){ return Array.from(new Set(a)).sort(function(x,y){ return x-y; }); }
 function twins(a){ return uniqSorted(a.filter(function(w, i){ return a.indexOf(w) !== i; })); }
-/* Every plate total the machine can take, with the fewest plates that make it. */
+/* The cable machine loads on TWO sides (Nerissa, 2026-11-21), the same plates on each, so each
+   pair in GEAR.plates gives one plate per side. Keyed by the TOTAL (both sides); the value is
+   the plates for ONE side, fewest plates first. */
 const CABLE_SUMS = (function(){
-  const p = GEAR.plates, best = {};
+  const p = twins(GEAR.plates), best = {};
   for (let m = 1; m < (1 << p.length); m++) {
     let sum = 0; const used = [];
     for (let i = 0; i < p.length; i++) if (m & (1 << i)) { sum += p[i]; used.push(p[i]); }
-    sum = Math.round(sum * 100) / 100;
-    if (!best[sum] || used.length < best[sum].length) best[sum] = used.sort(function(x,y){ return y-x; });
+    const total = Math.round(sum * 2 * 100) / 100;
+    if (!best[total] || used.length < best[total].length) best[total] = used.sort(function(x,y){ return y-x; });
   }
   return best;
 })();
@@ -1148,19 +1156,19 @@ function loadHint(ex, w){
     if (GEAR.dumbbells.indexOf(h) >= 0) return "two dumbbells set to " + h;
     return "";
   }
-  if (k === "cable") { const c = CABLE_SUMS[w]; return c ? "plates: " + c.join(" + ") : ""; }
+  if (k === "cable") { const c = CABLE_SUMS[w]; return c ? "on each side: " + c.join(" + ") : ""; }
   return "";
 }
 
 /* Bumped on every publish, and shown at the foot of Settings, so it is possible to tell from
    the phone which build is actually running. */
-const BUILD = "mom-2026-11-14c";
+const BUILD = "mom-2026-11-21a";
 /* Bumped whenever the coaching rules change. On first open after a bump, every lift is rebuilt
    from her saved history so the new rules apply to her next workout straight away.
    2 = second "Hold" in a row moves her up; weights follow the GEAR list.
    3 = lunges by total weight with chest-hold steps; presses build to 12 reps before 20 lb;
        messages say "this time". */
-const COACH_V = 5;   // 4: plainer "Stick to X lb again" wording (2026-11-10). 5: glute bridge now 2 sets (2026-11-14)
+const COACH_V = 6;   // 4: plainer "Stick to X lb again" wording (2026-11-10). 5: glute bridge now 2 sets (2026-11-14). 6: two-sided cable (2026-11-21)
 
 /* Dates follow the clock on her phone. toISOString() is UTC, which put evening workouts on
    tomorrow. */
@@ -1307,9 +1315,10 @@ function barWeight(key){
 /* Weight of the empty bar or handle for this exercise. */
 function baseWeight(ex){
   const eq = equipFor(ex);
-  if (!eq || !EQUIP[eq] || !EQUIP[eq].perSide) return 0;
+  if (!eq || !EQUIP[eq] || !EQUIP[eq].perSide || !EQUIP[eq].bar) return 0;
   return barWeight(EQUIP[eq].bar);
 }
+function lbTxt(ex, w){ return lbFor(equipFor(ex), w); }
 function handsFor(ex){
   const ov = S.settings[ex.id] || {};
   return ov.hands || HANDS_DEFAULT[ex.id] || "each";
@@ -1345,7 +1354,7 @@ function weightLabel(ex, weight, band, equip, hands){
     return weight + " lb " + (hd === "one" ? "in one hand" : "in each hand");
   }
   if (LOAD_KIND[ex.id] === "lunge" && lungeHint(weight, true)) return weight + " lb (" + lungeHint(weight, true) + ")";
-  return weight + " lb";
+  return lbFor(eq, weight);
 }
 /* The line under the weight box. Spells the bar sum out, or confirms the dumbbell wording. */
 function totalLine(ex, val){
@@ -1361,6 +1370,11 @@ function totalLine(ex, val){
     const hint = blank ? "" : loadHint(ex, v);
     if (LOAD_KIND[ex.id] === "cable") return blank ? "All the plates on the machine, added up." : (hint ? v + " lb = " + hint.replace("plates: ", "") : "");
     return hint ? hint.charAt(0).toUpperCase() + hint.slice(1) + "." : "";
+  }
+  if (isSideEquip(eq)) {
+    if (blank) return "The plates on ONE side only. Put the same on the other side.";
+    const t = totalFrom(ex, v), c = CABLE_SUMS[t];
+    return v + " lb on each side" + (c ? " (" + c.join(" + ") + ")" : "") + " = " + t + " lb total";
   }
   if (blank) return "Enter the weight on one side.";
   return totalFrom(ex, v) + " lb = " + baseWeight(ex) + " bar + " + v + " a side";
@@ -1397,10 +1411,11 @@ function setsSummary(e, bw, bandWord){
   if (ws.every(w => w === ws[0])) {
     const lead = ws[0] == null
       ? (e.band ? esc(e.band) + (bandWord || "") : bw)
-      : ws[0] + " lb" + hand;
+      : lbFor(e.equip, ws[0]) + hand;
     return lead + " &times; " + sets.map(s => s.reps).join(", ");
   }
-  return sets.map((s, i) => (ws[i] == null ? bw : ws[i]) + "&times;" + s.reps).join(", ") + " lb" + hand;
+  const sd = isSideEquip(e.equip);
+  return sets.map((s, i) => (ws[i] == null ? bw : (sd ? ws[i] / 2 : ws[i])) + "&times;" + s.reps).join(", ") + (sd ? " lb a side" : " lb") + hand;
 }
 
 /* ============================================================
@@ -1486,7 +1501,7 @@ function progress(ex, entry, prev){
         const d = deloadTo(w, inc, ex);
         newLow = null;
         next = { weight:d, reps:ex.repLow, tone:"warn", chip:"Deload",
-          msg:"Two stalled sessions. This time drop to " + d + " lb" + hintTail(ex, d) +
+          msg:"Two stalled sessions. This time drop to " + lbTxt(ex, d) + hintTail(ex, d) +
               " and build back up from " + ex.repLow + " reps." };
       } else {
         next = { weight:null, reps:ex.repLow, tone:"warn", chip:"Ease off",
@@ -1515,20 +1530,20 @@ function progress(ex, entry, prev){
     } else if (w && up == null) {
       next = { weight:w, reps:hi, tone:"good", chip:"Heaviest you have",
         msg:lead + "All " + ex.sets + " sets at " + hi + " with the heaviest weight you have. " +
-            "Stay at " + w + " lb this time and lower each rep slowly. Time for heavier weights." };
+            "Stay at " + lbTxt(ex, w) + " this time and lower each rep slowly. Time for heavier weights." };
     } else if (w && bigJump) {
       newLow = { w:up, low:6 };
-      next = { weight:up, reps:6, tone:"good", chip:"Add " + (Math.round((up - w) * 100) / 100) + " lb",
-        msg:lead + "All " + ex.sets + " sets at " + hi + ". Go to " + up + " lb" + hintTail(ex, up) +
+      next = { weight:up, reps:6, tone:"good", chip:"Add " + lbTxt(ex, Math.round((up - w) * 100) / 100),
+        msg:lead + "All " + ex.sets + " sets at " + hi + ". Go to " + lbTxt(ex, up) + hintTail(ex, up) +
             ". It's a big jump, so aim for 6 to 8 reps per set. Fewer reps than before is normal." };
     } else if (w) {
       newLow = null;
       const step = Math.round((up - w) * 100) / 100;
-      next = { weight:up, reps:ex.repLow, tone:"good", chip:"Add " + step + " lb",
+      next = { weight:up, reps:ex.repLow, tone:"good", chip:"Add " + lbTxt(ex, step),
         msg: (ex.id === "reverse_lunge" && up === 12)
           ? "Moving up. Skip the two small dumbbells this time. Hold one 12 lb dumbbell upright at your " +
             "chest with both hands, like your goblet squat. Start again at " + ex.repLow + " reps per leg."
-          : lead + "All " + ex.sets + " sets at " + hi + " last time. This time go to " + up + " lb" +
+          : lead + "All " + ex.sets + " sets at " + hi + " last time. This time go to " + lbTxt(ex, up) +
             hintTail(ex, up) + " and start again at " + ex.repLow + " reps." };
     } else {
       next = { weight:null, reps:ex.repHigh, tone:"good", chip:"Add load",
@@ -1537,13 +1552,13 @@ function progress(ex, entry, prev){
   } else if (judged.length >= ex.sets && judged.every(r => r >= hi)) {
     // Every rep target was hit, but some sets were done lighter than the top weight.
     stalls = 0;
-    next = { weight:w, reps:hi, tone:"hold", chip:"Stay at " + w + " lb",
-      msg:"Every set reached " + hi + ", but not all at " + w + " lb. This time do all " + ex.sets +
+    next = { weight:w, reps:hi, tone:"hold", chip:"Stay at " + lbTxt(ex, w),
+      msg:"Every set reached " + hi + ", but not all at " + lbTxt(ex, w) + ". This time do all " + ex.sets +
           " sets at " + w + " before the weight goes up." };
   } else {
     stalls = 0;
     const aim = Math.min(hi, Math.min.apply(null, judged) + 1);
-    const stick = w ? "Stick to " + w + " lb again, but " : (ex.banded ? "Same band again, but " : "");
+    const stick = w ? "Stick to " + lbTxt(ex, w) + " again, but " : (ex.banded ? "Same band again, but " : "");
     const per = ex.per ? " " + ex.per : "";
     const cap = function(t){ return stick ? t : t.charAt(0).toUpperCase() + t.slice(1); };
     let msg = stick + cap("aim for " + aim + " reps" + per + " every set this time.");
@@ -2151,6 +2166,7 @@ function targetText(ex, t){
   if (ex.timed) return '<em>' + ex.sets + ' &times; ' + t.reps + ' s</em>';
   if (ex.banded) return '<em>' + ex.sets + ' &times; ' + t.reps + '</em>';
   if (t.weight == null) return ex.bwOk ? '<em>bodyweight &middot; ' + ex.sets + '&times;' + t.reps + '</em>' : '<em>set a weight</em>';
+  if (isSideEquip(equipFor(ex))) return (t.weight / 2) + '<em> lb a side &middot; ' + ex.sets + '&times;' + t.reps + '</em>';
   return t.weight + '<em> lb &middot; ' + ex.sets + '&times;' + t.reps + '</em>';
 }
 
@@ -2373,7 +2389,7 @@ function viewSession(){
       const varied = ws.length > 1 && ws.some(w => w !== ws[0]);
       h += '<span class="prev">Last time ' +
            (varied
-             ? lift.reps.map((r, i) => (ws[i] == null ? "BW" : ws[i]) + "&times;" + r).join(", ") + " lb"
+             ? lift.reps.map((r, i) => (ws[i] == null ? "BW" : (isSideEquip(equipFor(ex)) ? ws[i] / 2 : ws[i])) + "&times;" + r).join(", ") + (isSideEquip(equipFor(ex)) ? " lb a side" : " lb")
              : weightLabel(ex, lift.weight, lift.band) + ' &times; ' + lift.reps.join(", ")) +
            '  &middot;  ' + fmtDate(lift.date) + '</span>';
     }
@@ -2471,6 +2487,34 @@ function sortSessions(){
            String(b.id||"").localeCompare(String(a.id||""));
   });
 }
+/* One-time fix (2026-11-21): her cable machine loads two sides. Until now the app asked for the
+   total, but she typed what was on ONE side, so pulldown and row weights before Nov 21 are
+   doubled to the true total. On Nov 21 she read "total" and put 10 a side (20 total, a big drop
+   by mistake): that weight is right, but the entry is marked ignore so coaching carries on from
+   Nov 15 instead of sending her backward. Runs once (prefs.cableSides). */
+function migrateCableSides(){
+  if (prefs().cableSides === 1) return;
+  try {
+    for (const rec of (S.sessions || [])) {
+      for (const en of (rec.entries || [])) {
+        if (en.id !== "lat_pulldown" && en.id !== "cable_row") continue;
+        if (en.equip === "cable2") continue;
+        const d = String(rec.date || "");
+        if (d < "2026-11-21") {
+          if (en.weight != null) en.weight = Math.round(en.weight * 2 * 100) / 100;
+          for (const st of (en.sets || [])) if (st && st.weight != null) st.weight = Math.round(st.weight * 2 * 100) / 100;
+        } else if (d === "2026-11-21") {
+          en.ignore = true;
+          const msg = "Did 10 lb a side by mistake (the app asked for the total). Not used to pick the next weight.";
+          en.note = en.note ? en.note + " " + msg : msg;
+        }
+        en.equip = "cable2";
+      }
+    }
+    S.prefs = Object.assign({}, S.prefs, { cableSides: 1, coachV: 0 });   // coachV 0 forces a replay
+    cacheLocal();
+  } catch(e){ /* leave history as it was rather than break the app */ }
+}
 /* One-time replay when the coaching rules change (see COACH_V). History itself is untouched. */
 function migrateCoaching(){
   if (prefs().coachV === COACH_V) return;
@@ -2489,6 +2533,7 @@ function rebuildLifts(){
   for (const rec of ordered) {
     for (const en of (rec.entries || [])) {
       if (!en.sets || !en.sets.length) continue;
+      if (en.ignore) continue;   // logged by mistake, kept in History but never coached from
       const ex = exDefById(en.id);
       if (!ex) continue;
       lifts[en.id] = progress(ex, en, lifts[en.id]);
@@ -2618,7 +2663,7 @@ function viewEdit(){
     h += '<div class="ed-sets">';
     if (e.sets.length) {
       h += '<div class="ed-set ed-capt"><span class="ed-n"></span>' +
-           (ex.banded ? '' : '<b>Weight</b>') + '<b>Reps</b><b class="ed-c-rpe">How hard</b><span class="ed-c-x"></span></div>';
+           (ex.banded ? '' : (isSideEquip(e.equip) ? '<b>Total lb</b>' : '<b>Weight</b>')) + '<b>Reps</b><b class="ed-c-rpe">How hard</b><span class="ed-c-x"></span></div>';
     }
     e.sets.forEach(function(st, i){
       const sw = setW(st, e);
@@ -2937,9 +2982,12 @@ document.addEventListener("click", function(ev){
       const el = document.getElementById("w_" + exId);
       if (el && loadsFor(ex)) {
         // Step through the weights she owns, not a fixed jump.
-        const cur = el.value === "" ? 0 : Number(el.value);
+        // Loads are totals; a per-side box (two-sided cable) shows half.
+        const side = isPerSide(ex);
+        const typed = el.value === "" ? 0 : Number(el.value);
+        const cur = side && el.value !== "" ? totalFrom(ex, typed) : typed;
         const v = a === "w+" ? nextLoad(ex, cur) : prevLoad(ex, cur);
-        if (v != null) el.value = v;
+        if (v != null) el.value = side ? perSideFrom(ex, v) : v;
         else if (a === "w-") el.value = "";
       } else {
         stepInput("w_"+exId, (a === "w+" ? 1 : -1) * weightStep(ex), 0);
@@ -3167,6 +3215,7 @@ document.addEventListener("keydown", function(ev){
    BOOT
    ============================================================ */
 loadLocal();
+migrateCableSides();
 migrateCoaching();
 render();
 connect();
